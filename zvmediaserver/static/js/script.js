@@ -1,0 +1,1 @@
+$(document).ready(alert('Hello form Django'))
