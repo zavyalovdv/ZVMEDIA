@@ -2,11 +2,11 @@
  
 {% block content %}
 <h1>{{title}}</h1>
-<ul>
     {% for book in books %}
-    <li>
-              <h2>{{book.book_name}}</h2>
-    </li>
+        <p>Название: {{book.book_name}}</p>  
+        <p>Автор: {{book.book_author}}</p>  
+        <p>Категория: {{book.book_category}}</p>  
+        <p>Жанр: {{book.book_genre}}</p>
+        <br>  
     {% endfor %}
-</ul>
 {% endblock %}

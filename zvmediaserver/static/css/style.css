@@ -1,3 +1,62 @@
 body {
-    background-color: aqua;
-}
+    margin: 0;
+    padding: 0;
+    background: azure;
+    font-family: Roboto;
+  }
+   
+  .nav ul {
+    list-style: none;
+    background-color: rgb(12, 2, 36);
+    text-align: center;
+    padding: 0;
+    margin: 0;
+  }
+  .nav li {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    height: 35px;
+    border-bottom: 1px solid azure;
+  }
+   
+  .nav a {
+    text-decoration: none;
+    color: azure;
+    display: block;
+    transition: .3s background-color;
+    letter-spacing: 2px;
+  }
+   
+  .nav a:hover {
+    background-color: azure;
+    color: rgb(12, 2, 36);
+    letter-spacing: 3px;
+  }
+   
+  .nav a.active {
+    background-color: #fff;
+    color: #444;
+    cursor: default;
+  }
+   
+  @media screen and (min-width: 600px) {
+    .nav li {
+      width: 180px;
+      border-bottom: none;
+      height: 35px;
+      line-height: 35px;
+      font-size: 1em;
+    }
+   
+    .nav li {
+      display: inline-block;
+      margin-right: -4px;
+    }
+   
+  }
+
+  .wrapper {
+    max-width: 1170px;
+    text-align: center;
+  }

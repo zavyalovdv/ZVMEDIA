@@ -1,1 +1,1 @@
-$(document).ready(alert('Hello form Django'))
+$(document).ready()

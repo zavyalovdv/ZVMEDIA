@@ -4,14 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
+    <link rel="icon" type="image/png" href="{% static 'icons/favicon.png' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/jquery.min.js' %}"></script>  
     <script src="{% static 'js/script.js' %}"></script>
      
-    <title>{{title}}</title>
+    <title>ZVMEDIASERVER</title>
 </head>
 <body> 
-    {% block content %}
-    {% endblock %}
+    <header>
+        <div class="nav">
+          <ul>
+            <li class="home"><a href="{% url 'books' %}">Книги</a></li>
+            <li class="tutorials"><a class="" href="#">Фильмы</a></li>
+            <li class="about"><a href="#">Музыка</a></li>
+            <li class="news"><a href="#">Фото</a></li>
+          </ul>
+        </div>
+      </header>
+    <div class="wrapper">
+        {% block content %}
+        <h2>ZVMEDIASERVER</h2>
+        {% endblock %}
+    </div>
 </body>
 </html>
