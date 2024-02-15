@@ -20,9 +20,9 @@ def show_book(request, book_pk):
 def show_books_category(request, books_category_slug):
     return HttpResponse(f"<h1>{books_category_slug}</h1>")
 
-def show_books_genre(request, books_category_slug, books_genre_slug):
+def show_books_genre(request, book_category_slug, book_genre_slug, book_slug):
     data = {
-        'title': books_genre_slug,
+        'title': book_genre_slug,
     }
     return render(request, "zvmedia/jinja2/books/book.html", context=data)
 def contact(request):

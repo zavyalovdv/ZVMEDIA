@@ -1,12 +1,26 @@
 {% extends 'zvmedia/index.html' %}
  
 {% block content %}
-<h1>{{title}}</h1>
-    {% for book in books %}
-        <p>Название: {{book.book_name}}</p>  
-        <p>Автор: {{book.book_author}}</p>  
-        <p>Категория: {{book.book_category}}</p>  
-        <p>Жанр: {{book.book_genre}}</p>
-        <br>  
-    {% endfor %}
+<div class="content">
+    <table>
+        <thead>
+            <th>Название</th>
+            <th>Автор</th>
+            <th>Категория</th>
+            <th>Жанр</th>
+        </thead>
+        <tbody>
+            {% for book in books %}
+                <tr>
+                    <td><a href="{{book.book_category.book_category_slug}}/{{book.book_genre.book_genre_slug}}/{{book.book_slug}}">{{book.book_name}}</a></td>  
+                    <td> {% for author in book.book_author.all %}
+                        <a href="author/{{author.author_slug}}">{{author.author_name}}</a>
+                        {% endfor %}
+                    </td>  
+                    <td><a href="{{book.book_category.book_category_slug}}">{{book.book_category}}</a></td>  
+                    <td><a href="{{book.book_genre.book_genre_slug}}">{{book.book_genre}}</a></td>                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
