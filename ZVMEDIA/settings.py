@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_jinja',
     'django_extensions',
     'zvmediaserver.apps.ZvmediaserverConfig',
+    'zvmediaserver.modules.services',
 ]
 
 MIDDLEWARE = [

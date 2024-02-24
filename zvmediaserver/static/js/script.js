@@ -1,1 +1,1 @@
-$(document).ready()
+$(document).ready(console.log("Hello from Django"))

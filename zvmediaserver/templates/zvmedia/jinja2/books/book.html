@@ -1,6 +1,7 @@
 {% extends 'zvmedia/index.html' %}
  
 {% block content %}
-<h1>{{title}}</h1>
-
+    <div class="title">
+        <h2>{{ book.book_author.all|first }} {{ book.book_name }}</h2>
+    </div>
 {% endblock %}

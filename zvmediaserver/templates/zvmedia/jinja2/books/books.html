@@ -1,26 +1,219 @@
 {% extends 'zvmedia/index.html' %}
- 
+
 {% block content %}
-<div class="content">
-    <table>
-        <thead>
-            <th>Название</th>
-            <th>Автор</th>
-            <th>Категория</th>
-            <th>Жанр</th>
-        </thead>
-        <tbody>
-            {% for book in books %}
-                <tr>
-                    <td><a href="{{book.book_category.book_category_slug}}/{{book.book_genre.book_genre_slug}}/{{book.book_slug}}">{{book.book_name}}</a></td>  
-                    <td> {% for author in book.book_author.all %}
-                        <a href="author/{{author.author_slug}}">{{author.author_name}}</a>
-                        {% endfor %}
-                    </td>  
-                    <td><a href="{{book.book_category.book_category_slug}}">{{book.book_category}}</a></td>  
-                    <td><a href="{{book.book_genre.book_genre_slug}}">{{book.book_genre}}</a></td>                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-bg-dark">
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-link">
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Категории
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Действие</a></li>
+                            <li><a class="dropdown-item" href="#">Другое действие</a></li>
+                            <li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-link">
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Жанры
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Действие</a></li>
+                            <li><a class="dropdown-item" href="#">Другое действие</a></li>
+                            <li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-link">
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Список чтения
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Действие</a></li>
+                            <li><a class="dropdown-item" href="#">Другое действие</a></li>
+                            <li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-link">
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Аторы
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Действие</a></li>
+                            <li><a class="dropdown-item" href="#">Другое действие</a></li>
+                            <li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <hr>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <strong>Действие</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    <li><a class="dropdown-item" href="#">New project...</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="d-flex flex-column flex-shrink-0 text-bg-dark" style="width: 4.5rem;">
+            <a href="/" class="d-block p-3 link-body-emphasis text-decoration-none" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Icon-only">
+                <svg class="bi pe-none" width="40" height="32">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="visually-hidden">Icon-only</span>
+            </a>
+            <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active py-3 border-bottom rounded-0" aria-current="page"
+                        data-bs-toggle="tooltip" data-bs-placement="right" aria-label="Home"
+                        data-bs-original-title="Home">
+                        <svg class="bi pe-none" width="24" height="24" role="img" aria-label="Home">
+                            <use xlink:href="#home"></use>
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip"
+                        data-bs-placement="right" aria-label="Dashboard" data-bs-original-title="Dashboard">
+                        <svg class="bi pe-none" width="24" height="24" role="img" aria-label="Dashboard">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip"
+                        data-bs-placement="right" aria-label="Orders" data-bs-original-title="Orders">
+                        <svg class="bi pe-none" width="24" height="24" role="img" aria-label="Orders">
+                            <use xlink:href="#table"></use>
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip"
+                        data-bs-placement="right" aria-label="Products" data-bs-original-title="Products">
+                        <svg class="bi pe-none" width="24" height="24" role="img" aria-label="Products">
+                            <use xlink:href="#grid"></use>
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip"
+                        data-bs-placement="right" aria-label="Customers" data-bs-original-title="Customers">
+                        <svg class="bi pe-none" width="24" height="24" role="img" aria-label="Customers">
+                            <use xlink:href="#people-circle"></use>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+            <div class="dropdown border-top">
+                <a href="#"
+                    class="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24" class="rounded-circle">
+                </a>
+                <ul class="dropdown-menu text-small shadow">
+                    <li><a class="dropdown-item" href="#">New project...</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col text-center content-book-list">
+            <table class="book-list text-center">
+                <thead class="book-head">
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Категория</th>
+                    <th>Жанр</th>
+                    <th>Статус</th>
+                    <th>Страниц</th>
+                    <th>Слов</th>
+                    <th>Часов на чтение</th>
+                    <th>Избранное</th>
+                    <th>Список чтения</th>
+                    <th>Действия</th>
+                </thead>
+                <tbody class="book-body">
+                    {% for book in books %}
+                    <tr>
+                        <td><a href="{% url 'detail_book' book.slug %}">{{ book.name }}</a></td>  
+                        <td> 
+                            {% for author in book.author.all %}
+                                <a href="author/{{author.slug}}">{{author.name}}</a>
+                            {% endfor %}
+                        </td>  
+                        <td><a href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>  
+                        <td>
+                            {% for genre in book.genre.all %}
+                                <a href="{% url 'books_genre' genre.slug %}">{{genre.name}}</a>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{book.status}}
+                        </td>
+                        <td>
+                                {{book.pages_count}}
+                        </td>
+                        <td>
+                            {{book.words_count}}
+                        </td>
+                        <td>
+                            {{book.time_to_read}}
+                        </td>
+                        <td>
+                            {{book.is_favorites}}
+                        </td>
+                        <td>
+                            {% for reading_list in book.reading_list.all %}
+                                <a href="#">{{reading_list.name}}</a>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary">
+                                    <a href="{% url 'detail_book' book.slug %}">Читать</a>
+                                </button>
+                                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                  <span class="visually-hidden">Переключатель выпадающего списка</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <a href="{% url 'detail_book' book.slug %}">Добавить в список</a>
+                                    <a href="{% url 'detail_book' book.slug %}">Удалить {{ book.name }}</a>
+                                </ul>
+                              </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
+
