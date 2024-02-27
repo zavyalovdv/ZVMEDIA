@@ -1,39 +1,44 @@
 from django.contrib import admin
 from .models import *
-
-# admin.site.register(Book)
-# admin.site.register(BookAuthor)
-# admin.site.register(BookCategory)
-# admin.site.register(BookGenre)
-# admin.site.register(BookTag)
-# admin.site.register(BookReadingList)
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
-@admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    list_display = ('name', 'file', 'category', 'status', 'pages_count',
+                    'words_count', 'time_to_read', 'slug', 'create_time', 'update_time')
+    # prepopulated_fields = {'slug': ('name',)}
+    fields = ['name', 'file', 'author', 'category', 'subcategory']
 
 
-@admin.register(BookAuthor)
 class BookAuthorAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    fields = ['name']
+    # prepopulated_fields = {'slug': ('name',)}
 
 
-@admin.register(BookCategory)
 class BookCategoryAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    fields = ['name']
+    # prepopulated_fields = {'slug': ('name',)}
 
 
-@admin.register(BookGenre)
-class BookGenreAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+class BookSubcategoryAdmin(admin.ModelAdmin):
+    fields = ['name', 'category']
+    # prepopulated_fields = {'slug': ('name',)}
 
 
-@admin.register(BookTag)
 class BookTagAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    fields = ['name']
+    # prepopulated_fields = {'slug': ('name',)}
 
 
-@admin.register(BookReadingList)
 class BookReadingListAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    fields = ['name']
+    # prepopulated_fields = {'slug': ('name',)}
+
+
+admin.site.register(Book, BookAdmin)
+admin.site.register(BookAuthor, BookAuthorAdmin)
+admin.site.register(BookCategory, BookCategoryAdmin)
+admin.site.register(BookSubcategory, BookSubcategoryAdmin)
+admin.site.register(BookTag, BookTagAdmin)
+admin.site.register(BookReadingList, BookReadingListAdmin)

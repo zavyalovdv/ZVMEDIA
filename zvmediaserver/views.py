@@ -3,6 +3,9 @@ from ZVMEDIA.settings import MEDIA_ROOT
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
+
+# from zvmediaserver.forms import NewBookAuthorForm, NewBookForm
+from zvmediaserver.forms import AddBookCategoryForm, AddBookForm, AddBookSubcategoryForm
 from .models import *
 
 
@@ -30,6 +33,15 @@ def show_detail_book(request, book_slug):
         raise Http404()
 
 
+class CreateBook(CreateView):
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'
+    model = Book
+    form_class = AddBookForm
+    template_name = 'zvmedia/jinja2/books/add_book.html'
+    success_url = "/books"
+
+
 class ShowBookCategory(ListView):
     template_name = "zvmedia/jinja2/books/books_category.html"
     context_object_name = 'books'
@@ -43,19 +55,38 @@ class ShowBookCategory(ListView):
     def get_queryset(self):
         return Book.objects.filter(category__slug=self.kwargs['book_category_slug'])
 
+class CreateBookCategory(CreateView):
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'
+    model = BookCategory
+    form_class = AddBookCategoryForm
+    template_name = 'zvmedia/jinja2/books/add_book.html'
+    success_url = "/books"
 
-class ShowBookGenre(ListView):
-    template_name = "zvmedia/jinja2/books/books_genre.html"
+
+class ShowBookSubcategory(ListView):
+    template_name = "zvmedia/jinja2/books/books_subcategory.html"
     context_object_name = 'books'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        genre = context['books'][0].genre
-        context['title'] = self.kwargs['book_genre_slug']
+        subcategory = context['books'][0].genre
+        context['title'] = self.kwargs['book_subcategory_slug']
         return context
 
     def get_queryset(self):
-        return Book.objects.filter(genre__slug=self.kwargs['book_genre_slug'])
+        return Book.objects.filter(subcategory__slug=self.kwargs['book_subcategory_slug'])
+
+
+
+
+class CreateBookSubcategory(CreateView):
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'
+    model = Book
+    form_class = AddBookSubcategoryForm
+    template_name = 'zvmedia/jinja2/books/add_book.html'
+    success_url = "/books"
 
 
 def index(request):

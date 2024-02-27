@@ -1,0 +1,13 @@
+{% extends 'zvmedia/index.html' %}
+ 
+{% block content %}
+<div class="content">
+    <h2>Новая категория</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+        {{ field.errors }}
+    </form>
+</div>
+{% endblock %}

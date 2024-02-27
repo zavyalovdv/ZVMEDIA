@@ -13,37 +13,7 @@
 </head>
 <body>
   {% block header %}
-  <header>
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
-      <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample11"
-          aria-controls="navbarsExample11" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse d-lg-flex" id="navbarsExample11">
-          <a class="navbar-brand col-lg-3 me-0" href="/">://ZVMEDIASERVER</a>
-          <ul class="navbar-nav col-lg-6 justify-content-lg-center">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'books' %}">Библиотека</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'books' %}">Кинотеатр</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'books' %}">Музыка</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'books' %}">Галерея</a>
-            </li>
-          </ul>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-          </form>
-        </div>
-      </div>
-    </nav>
-  </header>
+    {% include "./header.html" %}
   {% endblock %}
   {% block content %}<h2>ZVMEDIASERVER</h2>{% endblock %}
   <footer>
