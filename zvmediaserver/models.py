@@ -21,7 +21,7 @@ class Book(models.Model):
     subcategory = models.ManyToManyField(
         "BookSubcategory", verbose_name="Подкатегория", related_name="book")
     status = models.CharField(
-        verbose_name="Статус", choices=BOOK_STATUS, max_length=200, default="Не читалась")
+        verbose_name="Статус", choices=BOOK_STATUS, max_length=200, default="не читалась")
     pages_count = models.IntegerField(
         verbose_name="Количество страниц", null=True, blank=True)
     words_count = models.IntegerField(
@@ -54,7 +54,7 @@ class Book(models.Model):
         if not self.slug:
             self.slug = unique_slugify_models(self, self.name)
         if not self.status:
-            self.status = "Не читалась"
+            self.status = "не читалась"
         if not self.is_favorites:
             self.is_favorites = False
 
@@ -62,38 +62,6 @@ class Book(models.Model):
 
     # def get_absolute_url(self):
     #     return reverse('books', kwargs={"slug": self.slug})
-
-    # OLD DOC METHODS
-    # def get_pdf_pages_count(self, filepath):
-    #     document = PdfFileReader(open(f"{filepath}/book/", 'rb'))
-    #     return document.getNumPages()
-
-    # def get_words_count(pages_number):
-    #     return pages_number * WORDS_PER_PAGE
-
-    # def get_epub_pages_count(file):
-    #     book = open_book(file)
-    #     rows = convert_epub_to_lines(book)
-    #     words_count = 0
-    #     for row in rows:
-    #         words_count += len(row.split(" "))
-    #     return round(words_count / WORDS_PER_PAGE)
-
-    # def get_reading_time(words_count, type):
-    #     if type == "Художественная":
-    #         return round(((words_count / WORDS_PER_MINUTE_IMAGINATIVE) / 60) * 10) / 10
-    #     elif type == "Обучающая":
-    #         return round(((words_count / WORDS_PER_MINUTE_LEARN) / 60) * 10) / 10
-
-    # def save(self, *args, **kwargs):
-        # if not self.time_to_read:
-        #     if pathlib.Path(self.file.path).suffix == ".pdf":
-        #         self.pages_count = self.get_pdf_pages_count(self.file.path)
-        #     elif pathlib.Path(self.file.path).suffix == ".epub":
-        #         self.pages_count = self.get_epub_pages_count(self.file)
-        #     self.words_count = self.get_words_count(self.pages_count)
-        #     self.time_to_read = self.get_reading_time(
-        #         self.words_count, self.category.name)
 
 
 class BookAuthor(models.Model):
@@ -165,7 +133,6 @@ class BookSubcategory(models.Model):
 class BookReadList(models.Model):
     name = models.CharField(verbose_name="Название",
                             max_length=200, unique=True, db_index=True)
-    is_related = models.BooleanField(verbose_name="Связана с книгой?")
     slug = models.SlugField(verbose_name="Слаг", max_length=255, unique=True)
     create_time = models.DateTimeField(
         verbose_name="Дата создания", auto_now_add=True)

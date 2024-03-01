@@ -5,75 +5,10 @@
     <div class="row flex-nowrap">
         {% include "./sidebar.html" %}
         <div class="col text-center content-book-list">
-            <table class="book-list text-center">
-                <thead class="book-head">
-                    <th>Название</th>
-                    <th>Автор</th>
-                    <th>Категория</th>
-                    <th>Подкатегория</th>
-                    <th>Статус</th>
-                    <th>Страниц</th>
-                    <th>Слов</th>
-                    <th>Часов на чтение</th>
-                    <th>Избранное</th>
-                    <th>Список чтения</th>
-                    <th>Действия</th>
-                </thead>
-                <tbody class="book-body">
-                    {% for book in books %}
-                    <tr>
-                        <td><a href="{% url 'detail_book' book.slug %}">{{ book.name }}</a></td>  
-                        <td> 
-                            {% for author in book.author.all %}
-                                <a href="author/{{author.slug}}">{{author.name}}</a>
-                            {% endfor %}
-                        </td>  
-                        <td><a href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>  
-                        <td>
-                            {% for subcategory in book.subcategory.all %}
-                                <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}}</a>
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {{book.status}}
-                        </td>
-                        <td>
-                                {{book.pages_count}}
-                        </td>
-                        <td>
-                            {{book.words_count}}
-                        </td>
-                        <td>
-                            {{book.time_to_read}}
-                        </td>
-                        <td>
-                            {{book.is_favorites}}
-                        </td>
-                        <td>
-                            {% for reading_list in book.reading_list.all %}
-                                <a href="#">{{reading_list.name}}</a>
-                            {% endfor %}
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-secondary">
-                                    <a href="{% url 'detail_book' book.slug %}">Читать</a>
-                                </button>
-                                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                  <span class="visually-hidden">Переключатель выпадающего списка</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <a href="{% url 'detail_book' book.slug %}">Добавить в список</a>
-                                    <a href="{% url 'detail_book' book.slug %}">Удалить {{ book.name }}</a>
-                                </ul>
-                              </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {% block 'booklist' %}
+                {% include "./book_table.html" %}
+            {% endblock %}
         </div>
     </div>
 </div>
 {% endblock %}
-

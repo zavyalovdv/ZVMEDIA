@@ -2,7 +2,7 @@ import re
 from django import forms
 from django.forms import CharField, ModelForm, TextInput, FileInput, Select, SelectMultiple, MultipleChoiceField, ValidationError, modelform_factory
 from zvmediaserver.modules.services.utils import unique_slugify_models
-from .models import Book, BookAuthor, BookCategory, BookSubcategory
+from .models import Book, BookAuthor, BookCategory, BookReadList, BookSubcategory
 
 
 class AddBookForm(ModelForm):
@@ -50,3 +50,8 @@ class AddBookSubcategoryForm(ModelForm):
             'name': TextInput(attrs={'class': 'form-control'}),
             'category': Select(attrs={'class': 'form-control'}),
         }
+class AddBookReadListForm(ModelForm):
+    class Meta:
+        model = BookReadList
+        fields = ['name']
+        widgets = {'name': TextInput(attrs={'class': 'form-control'})}

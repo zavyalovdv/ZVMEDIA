@@ -13,7 +13,7 @@
         <tbody class="book-body">
             {% for book in books %}
                 <tr>
-                    <td><a href="{% url 'detail_book' book.slug %}">{{book.name}}</a></td> 
+                    <td><a href="{% url 'browser_detail_book' book.slug %}">{{book.name}}</a></td> 
                     <td> {% for author in book.author.all %}
                         <a href="author/{{author.slug}}">{{author.name}}</a>
                         {% endfor %}
@@ -25,7 +25,7 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="{% url 'detail_book' book.slug %}">Читать</a>
+                        <a href="{% url 'django_detail_book' book.slug %}">Читать</a>
                         <a href="{{book.genre.slug}}">В список чтения</a>
                         <a href="{{book.genre.slug}}">Удалить</a>
                     </td>

@@ -1,12 +1,12 @@
 import os
 from ZVMEDIA.settings import MEDIA_ROOT
+from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
+from django.http import JsonResponse
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render
-from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
-
-# from zvmediaserver.forms import NewBookAuthorForm, NewBookForm
-from zvmediaserver.forms import AddBookCategoryForm, AddBookForm, AddBookSubcategoryForm
+from zvmediaserver.forms import AddBookCategoryForm, AddBookForm, AddBookReadListForm, AddBookSubcategoryForm
 from .models import *
+from django.urls import reverse_lazy
 
 
 class ShowBooks(ListView):
@@ -24,14 +24,43 @@ class ShowBooks(ListView):
 def show_detail_book(request, book_slug):
     try:
         book = get_object_or_404(Book, slug=book_slug)
-        print(MEDIA_ROOT)
-        print(os.path.join(MEDIA_ROOT, f'{book.file.name}'))
         return FileResponse(
             open(os.path.join(MEDIA_ROOT, f'{book.file.name}'), 'rb'),
             content_type='application/pdf')
     except FileNotFoundError:
         raise Http404()
 
+
+def book_view_as_text(request, book_slug):
+    book = Book.objects.get(slug=book_slug)
+    file = book.file
+    try:
+        path = os.path.join(MEDIA_ROOT, 'book')
+        doc = open(os.path.join(path, f"{book.slug}.txt"), "r")
+        print(os.path.join(path, f"{book.slug}.txt"))
+        template = 'zvmedia/jinja2/books/detail_book_as_text.html'
+        return render(request,template_name=template,context={'book':file})
+    except:
+        return render(request,template_name=template,context={'book':'error'})
+    else:
+        my_file.close()
+
+
+def book_change_favorite(request):
+    is_favorites = request.GET['is_favorites']
+    book = Book.objects.get(slug=request.GET['slug'])
+    if is_favorites == 'False':
+        book.is_favorites = False
+    else:
+        book.is_favorites = True
+    try:
+        book.save(update_fields=["is_favorites"])
+    except:
+        response = {'is_taken': False}
+    response = {
+        'is_taken': True
+    }
+    return JsonResponse(response)
 
 class CreateBook(CreateView):
     # login_url = '/login/'
@@ -55,6 +84,7 @@ class ShowBookCategory(ListView):
     def get_queryset(self):
         return Book.objects.filter(category__slug=self.kwargs['book_category_slug'])
 
+
 class CreateBookCategory(CreateView):
     # login_url = '/login/'
     # redirect_field_name = 'redirect_to'
@@ -62,7 +92,6 @@ class CreateBookCategory(CreateView):
     form_class = AddBookCategoryForm
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
-
 
 class ShowBookSubcategory(ListView):
     template_name = "zvmedia/jinja2/books/books_subcategory.html"
@@ -78,13 +107,20 @@ class ShowBookSubcategory(ListView):
         return Book.objects.filter(subcategory__slug=self.kwargs['book_subcategory_slug'])
 
 
-
-
 class CreateBookSubcategory(CreateView):
     # login_url = '/login/'
     # redirect_field_name = 'redirect_to'
     model = Book
     form_class = AddBookSubcategoryForm
+    template_name = 'zvmedia/jinja2/books/add_book.html'
+    success_url = "/books"
+
+
+class CreateBookReadList(CreateView):
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'
+    model = BookReadList
+    form_class = AddBookReadListForm
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
 
