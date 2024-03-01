@@ -31,7 +31,7 @@ class BookTagAdmin(admin.ModelAdmin):
     # prepopulated_fields = {'slug': ('name',)}
 
 
-class BookReadingListAdmin(admin.ModelAdmin):
+class BookReadListAdmin(admin.ModelAdmin):
     fields = ['name']
     # prepopulated_fields = {'slug': ('name',)}
 
@@ -41,4 +41,4 @@ admin.site.register(BookAuthor, BookAuthorAdmin)
 admin.site.register(BookCategory, BookCategoryAdmin)
 admin.site.register(BookSubcategory, BookSubcategoryAdmin)
 admin.site.register(BookTag, BookTagAdmin)
-admin.site.register(BookReadingList, BookReadingListAdmin)
+admin.site.register(BookReadList, BookReadListAdmin)
