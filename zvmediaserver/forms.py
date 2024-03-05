@@ -11,7 +11,7 @@ class AddBookForm(ModelForm):
     class Meta:
         model = Book
         fields = [
-            'name', 'file', 'author', 'category', 'subcategory','reading_list']
+            'name', 'file', 'author', 'category', 'subcategory', 'reading_list']
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'author': TextInput(attrs={'class': 'form-control'}),
@@ -35,6 +35,10 @@ class AddBookForm(ModelForm):
         return self.cleaned_data
 
 
+class UpdatedBookUploadForm(forms.Form):
+    file = forms.FileField()
+
+
 class AddBookCategoryForm(ModelForm):
     class Meta:
         model = BookCategory
@@ -50,6 +54,8 @@ class AddBookSubcategoryForm(ModelForm):
             'name': TextInput(attrs={'class': 'form-control'}),
             'category': Select(attrs={'class': 'form-control'}),
         }
+
+
 class AddBookReadListForm(ModelForm):
     class Meta:
         model = BookReadList

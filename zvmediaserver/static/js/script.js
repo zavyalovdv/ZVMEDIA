@@ -54,4 +54,34 @@ function changeFavotites(object) {
     return false;
 }
 
+// function saveBook(){
+//     $.ajax({
+//         data: { 'file': file},
+//         url: '/books/setpdf/',
+//         type: 'post',
+//         success: function (response) {
+//             if (response.is_taken == true) {
+//                 if (currentStatus == "True") {
+//                     $(object).replaceWith(snippetsFavorites["noFavorites"])
+//                 } else {
+//                     $(object).replaceWith(snippetsFavorites["favorites"])
+//                 }
+//                 findChanges = document.querySelectorAll('tbody .bi')
+//                 findChanges.forEach((newobject) => {
+//                     if (!(newobject.hasAttribute('favorites'))) {
+//                         object = newobject
+//                         $(object).attr('slug', slug)
+//                         $(object).attr('favorites', is_favorites)
+//                         setFavoritesListener()
+//                     }
+//                 })
+//             }
+//         },
+//         error: function (response) {
+//             console.log(response.responseJSON.errors)
+//         }
+//     });
+//     return false;
+//   }
+
 $(document).ready(exec())

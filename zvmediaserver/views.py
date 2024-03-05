@@ -1,12 +1,15 @@
 import os
+import json
 from ZVMEDIA.settings import MEDIA_ROOT
 from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render
-from zvmediaserver.forms import AddBookCategoryForm, AddBookForm, AddBookReadListForm, AddBookSubcategoryForm
+from zvmediaserver.forms import AddBookCategoryForm, AddBookForm, AddBookReadListForm, AddBookSubcategoryForm, UpdatedBookUploadForm
 from .models import *
 from django.urls import reverse_lazy
+from django.core.serializers.json import DjangoJSONEncoder
+from django.views.decorators.csrf import csrf_exempt
 
 
 class ShowBooks(ListView):
@@ -31,19 +34,82 @@ def show_detail_book(request, book_slug):
         raise Http404()
 
 
-def book_view_as_text(request, book_slug):
+def book_init_as_pdf(request, book_slug):
+    pdf_url = f'/books/getpdf/{book_slug}'
+    try:
+        template = 'zvmedia/jinja2/books/init_detail_book.html'
+        context = {
+            'pdf_url': json.dumps(pdf_url, cls=DjangoJSONEncoder),
+            'slug': json.dumps(book_slug, cls=DjangoJSONEncoder),
+        }
+        return render(request, template_name=template, context=context)
+    except:
+        return render(request, template_name=template, context=context)
+    else:
+        my_file.close()
+
+
+
+
+def book_reader_as_pdf(request, book_slug):
+    pdf_url = f'/books/getpdf/{book_slug}'
+    try:
+        template = 'zvmedia/jinja2/books/detail_book_as_pdf.html'
+        context = {
+            'my_data': json.dumps(pdf_url, cls=DjangoJSONEncoder)
+        }
+        return render(request, template_name=template, context=context)
+    except:
+        return render(request, template_name=template, context=context)
+    else:
+        my_file.close()
+
+
+def book_get_pdf(request, book_slug):
     book = Book.objects.get(slug=book_slug)
     file = book.file
     try:
-        path = os.path.join(MEDIA_ROOT, 'book')
-        doc = open(os.path.join(path, f"{book.slug}.txt"), "r")
-        print(os.path.join(path, f"{book.slug}.txt"))
-        template = 'zvmedia/jinja2/books/detail_book_as_text.html'
-        return render(request,template_name=template,context={'book':file})
+        # path = os.path.join(MEDIA_ROOT, 'book')
+        # doc = open(os.path.join(path, f"{book.slug}.txt"), "r")
+        # print(os.path.join(path, f"{book.slug}.txt"))
+
+        return FileResponse(file)
     except:
-        return render(request,template_name=template,context={'book':'error'})
+        return render(request, template_name=template, context={'book': 'error'})
     else:
         my_file.close()
+
+@csrf_exempt
+def book_set_pdf(request, book_slug):
+    
+    if request.method == 'POST':
+        # a = request._files
+        b = request.FILES
+        print(request.POST)
+        print(request.FILES['book'])
+        # b = json.loads(request.POST)
+        # form = UpdatedBookUploadForm(request.POST,request.FILES)
+        book = Book.objects.get(slug=book_slug)
+        # if form.is_valid():
+        #     print('valid form')
+        # else:
+        #     print('invalid form')
+        #     print(form.errors)
+        try:
+            # print(request['POST'])
+            book.file = request.FILES['book']
+            b = request.POST
+            book.save(update_fields=["file"])
+            # path = os.path.join(MEDIA_ROOT, 'book')
+            # doc = open(os.path.join(path, f"{book.slug}.txt"), "r")
+            # print(os.path.join(path, f"{book.slug}.txt"))
+        except:
+            response = {'is_taken': False}
+        
+    response = {
+            'is_taken': True
+        }
+    return JsonResponse(response)
 
 
 def book_change_favorite(request):
@@ -61,6 +127,7 @@ def book_change_favorite(request):
         'is_taken': True
     }
     return JsonResponse(response)
+
 
 class CreateBook(CreateView):
     # login_url = '/login/'
@@ -92,6 +159,7 @@ class CreateBookCategory(CreateView):
     form_class = AddBookCategoryForm
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
+
 
 class ShowBookSubcategory(ListView):
     template_name = "zvmedia/jinja2/books/books_subcategory.html"

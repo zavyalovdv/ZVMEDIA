@@ -1,0 +1,76 @@
+{% extends 'zvmedia/index.html' %}
+
+{% block content %}
+{% load static %}
+<script src="{% static 'js/pdf.js/build/pdf.mjs' %}" type="module" ></script>
+<script src="{% static 'js/pdf.js/web/viewer.mjs' %}"type="module" ></script>
+<!-- <script src="{% static 'js/script.js' %}"></script> -->
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        {% include "./sidebar.html" %}
+        <div class="col text-center content-book-list">
+            <canvas id="pdf-viewer"></canvas>
+            <div class="pdfjs-viewer">
+            </div>
+            <script>
+                let _URL = 'http://127.0.0.1:8000/books/browser/gore-ot-uma',
+                    _PDF_DOC,
+                    _CURRENT_PAGE = 1,
+                    _TOTAL_PAGES,
+                    _PAGE_RENDERING_IN_PROGRESS = 0,
+                    _CANVAS = document.querySelector('#pdf-viewer');
+
+                async function initPDF() {
+                    _CANVAS.style.display = 'block';
+                    try {
+                        _PDF_DOC = await pdfjsLib.getDocument(_URL);
+                        console.log(_PDF_DOC)
+                    }
+                    catch (error) {
+                        alert(error.message);
+                    }
+                    _TOTAL_PAGES = _PDF_DOC.numPages
+                }
+
+            </script>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+// var url = 'http://127.0.0.1:8000/books/browser/gore-ot-uma';
+
+<!-- let _URL = 'http://127.0.0.1:8000/books/browser/gore-ot-uma',
+_PDF_DOC,
+_CURRENT_PAGE = 1,
+_TOTAL_PAGES,
+_PAGE_RENDERING_IN_PROGRESS = 0,
+_CANVAS = document.querySelector('#pdf-viewer');
+
+async function initPDF() {
+_CANVAS.style.display = 'block';
+try {
+    _PDF_DOC = await pdfjsLib.getDocument({ url: _URL });
+}
+catch (error) {
+    alert(error.message);
+}
+_TOTAL_PAGES = _PDF_DOC.numPages
+console.log(_TOTAL_PAGES)
+console.log(_CURRENT_PAGE)
+for (let _CURRENT_PAGE = 1; _CURRENT_PAGE < _TOTAL_PAGES; _CURRENT_PAGE++) {
+    showPdfPage(_CURRENT_PAGE)
+}
+
+
+} -->
+
+
+<!-- pdf.getPage(_CURRENT_PAGE).then(function (page) {
+    console.log(page)
+    var viewport = page.getViewport({ scale: 1.0 });
+    var context = _CANVAS.getContext('2d');
+    _CANVAS.height = viewport.height;
+    _CANVAS.width = viewport.width;
+    page.render({ canvasContext: context, viewport: viewport });
+}) -->

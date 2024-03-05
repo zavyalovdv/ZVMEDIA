@@ -47,18 +47,18 @@ def save_extra_book_infodata(sender, instance):
     return instance
 
 
-def create_book_textdata(instance):
-    if pathlib.Path(instance.file.path).suffix == ".pdf":
-        pdf_object = (PdfReader(open(f"{instance.file.path}", 'rb'))).pages
-        path = os.path.join(MEDIA_ROOT, 'book')
-        book_doc = open(os.path.join(path, f"{instance.slug}.txt"), "a+")
-        try:
-            for page in pdf_object:
-                book_doc.write(page.extract_text())
-        except:
-            print("worng")
-        else:
-            book_doc.close()
+# def create_book_textdata(instance):
+#     if pathlib.Path(instance.file.path).suffix == ".pdf":
+#         pdf_object = (PdfReader(open(f"{instance.file.path}", 'rb'))).pages
+#         path = os.path.join(MEDIA_ROOT, 'book')
+#         book_doc = open(os.path.join(path, f"{instance.slug}.txt"), "a+")
+#         try:
+#             for page in pdf_object:
+#                 book_doc.write(page.extract_text())
+#         except:
+#             print("worng")
+#         else:
+#             book_doc.close()
             
         # new_output_pdf_object = PdfWriter()
         # with open(instance.file.path, "wb") as f:
@@ -66,16 +66,16 @@ def create_book_textdata(instance):
         #         "this.console.log('Hello from PDF');")
         #     new_output_pdf_object.write(f)
             
-        output = PdfWriter()
-        ipdf = PdfReader(open(f"{instance.file.path}", 'rb'))
+        # output = PdfWriter()
+        # ipdf = PdfReader(open(f"{instance.file.path}", 'rb'))
 
-        for i in range(len(ipdf.pages)):
-            page = ipdf.pages[i]
-            output.add_page(page)
+        # for i in range(len(ipdf.pages)):
+        #     page = ipdf.pages[i]
+        #     output.add_page(page)
 
-        with open('new.pdf', 'wb') as f:
-            output.add_js("console.log('hello from PDF')")
-            output.write(f)
+        # with open('new.pdf', 'wb') as f:
+        #     output.add_js("console.log('hello from PDF')")
+        #     output.write(f)
             
             
             

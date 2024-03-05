@@ -3,7 +3,7 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from .models import Book, BookAuthor
 from zvmediaserver.const import *
-from zvmediaserver.modules.services.utils import create_book_textdata
+# from zvmediaserver.modules.services.utils import create_book_textdata
 from PyPDF2 import PdfReader
 from epub_conversion.utils import open_book, convert_epub_to_lines
 from zvmediaserver.modules.services.utils import save_extra_book_infodata
@@ -13,7 +13,7 @@ from zvmediaserver.modules.services.utils import save_extra_book_infodata
 def extra_book_data(sender,instance,created,**kwargs):
     if created:
         extra_instance = save_extra_book_infodata(sender,instance)
-        create_book_textdata(instance)
+        # create_book_textdata(instance)
         extra_instance.save()
 
 # @receiver(pre_save,sender=Book)
