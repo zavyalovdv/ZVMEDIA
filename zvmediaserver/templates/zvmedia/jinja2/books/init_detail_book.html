@@ -1,0 +1,9 @@
+{{ pdf_url|json_script:"pdf_url" }}
+{{ slug|json_script:"slug" }}
+<script>
+    let pdf_url = JSON.parse(document.getElementById('pdf_url').textContent);
+    let slug = JSON.parse(document.getElementById('slug').textContent);
+    pdf_url = pdf_url.replace(/^"(.*)"$/, '$1');
+    slug = slug.replace(/^"(.*)"$/, '$1');
+    window.location.replace("http://127.0.0.1:8000/books/reader/"+slug+""+"?file=" + pdf_url);
+</script>
