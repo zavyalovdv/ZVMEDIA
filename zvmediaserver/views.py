@@ -1,18 +1,23 @@
 import os
 import json
-from ZVMEDIA.settings import MEDIA_ROOT
+from django.core.files import File
 from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView
-from django.shortcuts import get_object_or_404, render
-from zvmediaserver.forms import AddBookCategoryForm, AddBookForm, AddBookReadListForm, AddBookSubcategoryForm, UpdatedBookUploadForm
+from django.shortcuts import get_object_or_404, redirect, render
+from zvmediaserver.forms import AddBookAuthorForm, AddBookCategoryForm, AddBookForm, AddBookReadingListForm, AddBookSubcategoryForm, ChangeBookForm, UpdatedBookUploadForm, UserLoginForm
+from ZVMEDIA.settings import MEDIA_ROOT
+from zvmediaserver.modules.services.utils import UserToFormMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
 from django.urls import reverse_lazy
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import login, logout
+from django.contrib import messages
 
 
-class ShowBooks(ListView):
+class ShowBooks(LoginRequiredMixin, ListView):
     template_name = "zvmedia/jinja2/books/books.html"
     context_object_name = 'books'
 
@@ -49,8 +54,6 @@ def book_init_as_pdf(request, book_slug):
         my_file.close()
 
 
-
-
 def book_reader_as_pdf(request, book_slug):
     pdf_url = f'/books/getpdf/{book_slug}'
     try:
@@ -67,48 +70,40 @@ def book_reader_as_pdf(request, book_slug):
 
 def book_get_pdf(request, book_slug):
     book = Book.objects.get(slug=book_slug)
+    print(book_slug)
     file = book.file
     try:
-        # path = os.path.join(MEDIA_ROOT, 'book')
-        # doc = open(os.path.join(path, f"{book.slug}.txt"), "r")
-        # print(os.path.join(path, f"{book.slug}.txt"))
-
         return FileResponse(file)
     except:
         return render(request, template_name=template, context={'book': 'error'})
     else:
         my_file.close()
 
+
 @csrf_exempt
 def book_set_pdf(request, book_slug):
-    
     if request.method == 'POST':
-        # a = request._files
-        b = request.FILES
-        print(request.POST)
-        print(request.FILES['book'])
-        # b = json.loads(request.POST)
-        # form = UpdatedBookUploadForm(request.POST,request.FILES)
         book = Book.objects.get(slug=book_slug)
-        # if form.is_valid():
-        #     print('valid form')
-        # else:
-        #     print('invalid form')
-        #     print(form.errors)
         try:
-            # print(request['POST'])
+            book_path = book.file.path
+            filename = (book.file.name).split('/')[1]
+            # filename = book.file.name
+            # book.file.name = filename.split('/')[1]
             book.file = request.FILES['book']
-            b = request.POST
+            # with open(f'{book_path}', 'rb+') as b:
+            #     file_obj = File(b)
+            #     book.file.save('book_path', file_obj, save=True)
+            book.file.name = filename
+            os.remove(book_path)
             book.save(update_fields=["file"])
             # path = os.path.join(MEDIA_ROOT, 'book')
             # doc = open(os.path.join(path, f"{book.slug}.txt"), "r")
             # print(os.path.join(path, f"{book.slug}.txt"))
         except:
             response = {'is_taken': False}
-        
     response = {
-            'is_taken': True
-        }
+        'is_taken': True
+    }
     return JsonResponse(response)
 
 
@@ -129,7 +124,7 @@ def book_change_favorite(request):
     return JsonResponse(response)
 
 
-class CreateBook(CreateView):
+class CreateBook(LoginRequiredMixin, CreateView):
     # login_url = '/login/'
     # redirect_field_name = 'redirect_to'
     model = Book
@@ -137,8 +132,62 @@ class CreateBook(CreateView):
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
 
+    def get_form_kwargs(self, *args, **kwargs):
+        form_kwargs = super().get_form_kwargs(*args, **kwargs)
+        form_kwargs['request'] = self.request
+        return form_kwargs
 
-class ShowBookCategory(ListView):
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.user = self.request.user
+        instance.save()
+        form.save_m2m()
+        return redirect(self.success_url)
+
+
+class UpdateBook(LoginRequiredMixin, UpdateView):
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'
+    model = Book
+    form_class = ChangeBookForm
+    template_name = 'zvmedia/jinja2/books/edit_book.html'
+    success_url = "/books"
+    
+    def get_object(self, queryset=None):
+        return Book.objects.get(slug=self.kwargs.get("book_slug"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = BookCategory.objects.all()
+        return context
+
+    def get_form_kwargs(self, *args, **kwargs):
+        form_kwargs = super().get_form_kwargs(*args, **kwargs)
+        form_kwargs['request'] = self.request
+        return form_kwargs
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.user = self.request.user
+        instance.save()
+        form.save_m2m()
+        return redirect(self.success_url)
+
+
+class CreateBookAuthor(LoginRequiredMixin, CreateView):
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'
+    model = BookAuthor
+    form_class = AddBookAuthorForm
+    template_name = 'zvmedia/jinja2/books/add_book.html'
+    success_url = "/books"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class ShowBookCategory(LoginRequiredMixin, ListView):
     template_name = "zvmedia/jinja2/books/books_category.html"
     context_object_name = 'books'
 
@@ -152,13 +201,17 @@ class ShowBookCategory(ListView):
         return Book.objects.filter(category__slug=self.kwargs['book_category_slug'])
 
 
-class CreateBookCategory(CreateView):
+class CreateBookCategory(LoginRequiredMixin, CreateView):
     # login_url = '/login/'
     # redirect_field_name = 'redirect_to'
     model = BookCategory
     form_class = AddBookCategoryForm
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
 class ShowBookSubcategory(ListView):
@@ -175,7 +228,21 @@ class ShowBookSubcategory(ListView):
         return Book.objects.filter(subcategory__slug=self.kwargs['book_subcategory_slug'])
 
 
-class CreateBookSubcategory(CreateView):
+class ShowBookAuthor(LoginRequiredMixin, DetailView):
+    model = BookAuthor
+    template_name = "zvmedia/jinja2/books/books_subcategory.html"
+    context_object_name = 'authors'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def get_queryset(self):
+        return BookAuthor.objects.get(subcategory__slug=self.kwargs['book_author'])
+
+
+
+class CreateBookSubcategory(LoginRequiredMixin, CreateView):
     # login_url = '/login/'
     # redirect_field_name = 'redirect_to'
     model = Book
@@ -183,14 +250,22 @@ class CreateBookSubcategory(CreateView):
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-class CreateBookReadList(CreateView):
+
+class CreateBookReadingList(LoginRequiredMixin, CreateView):
     # login_url = '/login/'
     # redirect_field_name = 'redirect_to'
-    model = BookReadList
-    form_class = AddBookReadListForm
+    model = BookReadingList
+    form_class = AddBookReadingListForm
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
 def index(request):
@@ -208,6 +283,25 @@ def index(request):
 #     books = Book.objects.filter(category=category)
 #     return render(request, "zvmedia/jinja2/books/books_category.html",
 #                   {'books': books, 'title': f'Книги по категории {category}'})
+
+
+def userlogin(request):
+    if request.method == "POST":
+        form = UserLoginForm(data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            messages.success(request, 'Успешный вход')
+            return redirect('books')
+        else:
+            messages.error(request, 'Ошибка входа')
+    else:
+        form = UserLoginForm()
+    return render(request, template_name="zvmedia/login.html", context={'form': form})
+
+
+def userlogout(request):
+    logout(request)
+    return redirect('login')
 
 
 def page_not_found(request, exception):

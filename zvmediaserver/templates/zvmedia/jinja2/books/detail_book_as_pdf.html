@@ -574,7 +574,6 @@
     function exec() {
       console.log("Init()")
       uploadButton = document.getElementById('secondarySaveFile')
-      console.log(uploadButton)
       uploadButton.addEventListener('click', () => {
         uploadBook()
       })
@@ -585,9 +584,7 @@
         if (PDFViewerApplication._saveInProgress) {
           return;
         }
-        PDFViewerApplication._saveInProgress = true;
         PDFViewerApplication.pdfScriptingManager.dispatchWillSave();
-        // const url = PDFViewerApplication._downloadUrl,
         const filename = PDFViewerApplication._docFilename
         PDFViewerApplication._ensureDownloadComplete();
         const doc = await PDFViewerApplication.pdfDocument.saveDocument();
@@ -602,7 +599,7 @@
             method: "POST",
             body: file,
           })
-          .then(response => alert('Book uploaded'))
+          .then(response => alert('Book uploaded'), PDFViewerApplication._saveInProgress = false)
           .catch(err => alert(err));
       }
     }

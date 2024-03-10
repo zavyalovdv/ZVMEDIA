@@ -47,6 +47,12 @@ def save_extra_book_infodata(sender, instance):
     return instance
 
 
+class UserToFormMixin(object):
+    def get_form_kwargs(self):
+        kwargs = super(UserToFormMixin, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
 # def create_book_textdata(instance):
 #     if pathlib.Path(instance.file.path).suffix == ".pdf":
 #         pdf_object = (PdfReader(open(f"{instance.file.path}", 'rb'))).pages

@@ -25,7 +25,7 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="{% url 'django_detail_book' book.slug %}">Читать</a>
+                        <a href="{% url 'pdf_init_book' book.slug %}">Читать</a>
                         <a href="{{book.genre.slug}}">В список чтения</a>
                         <a href="{{book.genre.slug}}">Удалить</a>
                     </td>

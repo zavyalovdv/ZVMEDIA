@@ -72,7 +72,8 @@
                     </button>
                     <ul class="dropdown-menu">
                         <a href="#">Добавить в список</a>
-                        <a href="#">Удалить {{ book.name }}</a>
+                        <a href="{% url 'edit_book' book.slug %}">Редактировать</a>
+                        <a href="">Удалить {{ book.name }}</a>
                     </ul>
                 </div>
             </td>
