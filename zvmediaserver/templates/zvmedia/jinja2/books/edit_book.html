@@ -1,0 +1,34 @@
+{% extends 'zvmedia/index.html' %}
+
+{% block content %}
+<div class="content">
+    <h2>Ректирование {{ object }}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="name">Название </label>
+        <input id="name" type="text" name="name" value="{{ object.name }}" class="form-control">
+        <label for="name">Автор</label>
+        {% for author in object.author.all %}
+        <input id="author" type="text" name="author" value="{{ author.name }}" class="form-control">
+        {% endfor %}
+        <label for="file">Файл</label>
+        <input id="file" type="file" name="file" value="{{ object.file.filename }}" class="form-control">
+        <label for="name">Категория </label>
+        <select name="category" class="form-control" required="" id="id_category">
+            {% for category in categories.all %}
+            <option value="{{ forloop.counter }}">{{ category }}</option>
+            {% endfor %}
+          </select>
+        <label for="name">Подкатегория </label>
+        <select name="subcategory" class="form-control" required="" id="id_subcategory" multiple="">
+            {% for subcategory in object.subcategory.all %}
+            <option value="{{ forloop.counter }}">{{ subcategory.name }}</option>
+            {% endfor %}
+        </select>
+
+        <input id="name" type="select" name="name" value="{{ object.name }}" class="form-control">
+        <input type="submit" value="Submit" class="form-control">
+        {{ field.errors }}
+    </form>
+</div>
+{% endblock %}
