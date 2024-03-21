@@ -8,6 +8,7 @@ from zvmediaserver.const import *
 from ZVMEDIA.settings import BASE_DIR, MEDIA_ROOT
 
 
+
 def unique_slugify_models(instance, pre_slug):
     """
     Автоматический генератор уникальных SLUG для моделей
@@ -17,7 +18,6 @@ def unique_slugify_models(instance, pre_slug):
     while model.objects.filter(slug=unique_slug).exists():
         unique_slug = f'{unique_slug}-{uuid4().hex[:8]}'
     return unique_slug
-
 
 def save_extra_book_infodata(sender, instance):
     """ Заполняет дополнительную информацию о книге """
@@ -32,15 +32,12 @@ def save_extra_book_infodata(sender, instance):
         time_to_read = round(words_count / WORDS_PER_PAGE)
 
     words_count = pages_count * WORDS_PER_PAGE
-    if instance.category.name == "Художественная":
-        time_to_read = round(
-            ((words_count / WORDS_PER_MINUTE_ART) / 60) * 10) / 10
-    elif (instance.category.name == "Образовательная") or (instance.category.name == instance.category.name == "Учебная"):
+    time_to_read = round(
+        ((words_count / WORDS_PER_MINUTE_ART) / 60) * 10) / 10
+    if (instance.category.name == "Общеобразовательная") or (instance.category.name == instance.category.name == "Профессиональная"):
         time_to_read = round(
             ((words_count / WORDS_PER_MINUTE_EDU) / 60) * 10) / 10
-    else:
-        time_to_read = round(
-            ((words_count / WORDS_PER_MINUTE_ART) / 60) * 10) / 10
+
     instance.pages_count = pages_count
     instance.words_count = words_count
     instance.time_to_read = time_to_read
@@ -52,6 +49,10 @@ class UserToFormMixin(object):
         kwargs = super(UserToFormMixin, self).get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
+
+
+
+
 
 # def create_book_textdata(instance):
 #     if pathlib.Path(instance.file.path).suffix == ".pdf":

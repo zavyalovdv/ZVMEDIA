@@ -1,38 +1,43 @@
-{% extends 'zvmedia/index.html' %}
- 
-{% block content %}
-<div class="content">
-    <table class="book-list">
-        <thead class="book-head">
-            <th>Название</th>
-            <th>Автор</th>
-            <th>Категория</th>
-            <th>Жанр</th>
-            <th>Действие</th>
-        </thead>
-        <tbody class="book-body">
-            {% for book in books %}
+{% extends './books.html' %}
+{% block 'booklist' %}
+    {% include "./book_table.html" %}
+{% endblock %}
+
+
+{% comment %}
+    {% block content %}
+    <div class="content">
+        <table class="book-list">
+            <thead class="book-head">
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Категория</th>
+                <th>Жанр</th>
+                <th>Действие</th>
+            </thead>
+            <tbody class="book-body">
+                {% for book in books %}
                 <tr>
-                    <td><a href="{% url 'detail_book' book.slug %}">{{book.name}}</a></td>  
-                    <td>
-                        {% for author in book.author.all %}
-                            <a href="author/{{author.slug}}">{{author.name}}</a>
+                    <td><a href="{% url 'browser_detail_book' book.slug %}">{{book.name}}</a></td>
+                    <td> {% for author in book.author.all %}
+                        <a href="author/{{author.slug}}">{{author.name}}</a>
                         {% endfor %}
-                    </td>  
-                    <td><a href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>  
+                    </td>
+                    <td><a href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>
                     <td>
                         {% for genre in book.genre.all %}
-                            <a href="{% url 'books_genre' genre.slug %}">{{genre.name}}</a>
+                        <a href="{% url 'books_genre' genre.slug %}">{{genre.name}}</a>
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="{% url 'detail_book' book.slug %}">Читать</a>
+                        <a href="{% url 'pdf_init_book' book.slug %}">Читать</a>
                         <a href="{{book.genre.slug}}">В список чтения</a>
                         <a href="{{book.genre.slug}}">Удалить</a>
                     </td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock %}
+{% endcomment %}

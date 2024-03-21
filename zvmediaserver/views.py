@@ -26,7 +26,7 @@ class ShowBooks(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        return Book.objects.all()
+        return Book.objects.filter(user=self.request.user)
 
 
 def show_detail_book(request, book_slug):
@@ -78,6 +78,9 @@ def book_get_pdf(request, book_slug):
         return render(request, template_name=template, context={'book': 'error'})
     else:
         my_file.close()
+    finally:
+        book.status = "в процессе"
+        book.save(update_fields=["status"])
 
 
 @csrf_exempt
@@ -107,6 +110,31 @@ def book_set_pdf(request, book_slug):
     return JsonResponse(response)
 
 
+@csrf_exempt
+def update_time(request, book_slug):
+    if request.method == "POST":
+        book = Book.objects.get(slug=book_slug)
+        current_time_spent = book.time_spent
+        update_time_spent = float((json.load(request)['seconds'])/60)/60
+
+        # if current_time_spent > 0.0:
+        book.time_spent = current_time_spent + update_time_spent
+        # else:
+        #   book.time_spent = update_time_spent
+        try:
+            print(current_time_spent)
+            print(update_time_spent)
+            print(book.time_spent)
+            # book.time_spent = 0.0
+            book.save(update_fields=["time_spent"])
+        except:
+            response = {'is_taken': False}
+        response = {
+            'is_taken': True
+        }
+    return JsonResponse(response)
+
+
 def book_change_favorite(request):
     is_favorites = request.GET['is_favorites']
     book = Book.objects.get(slug=request.GET['slug'])
@@ -131,6 +159,19 @@ class CreateBook(LoginRequiredMixin, CreateView):
     form_class = AddBookForm
     template_name = 'zvmedia/jinja2/books/add_book.html'
     success_url = "/books"
+    context_object_name = 'books'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['books'] = Book.objects.filter(user=self.request.user)
+        context['categories'] = BookCategory.objects.filter(
+            user=self.request.user)
+        context['user'] = self.request.user
+        context['reading_list'] = BookReadingList.objects.filter(user=self.request.user)
+        return context
+
+    def get_queryset(self):
+        return BookCategory.objects.filter(user=self.request.user)
 
     def get_form_kwargs(self, *args, **kwargs):
         form_kwargs = super().get_form_kwargs(*args, **kwargs)
@@ -152,19 +193,27 @@ class UpdateBook(LoginRequiredMixin, UpdateView):
     form_class = ChangeBookForm
     template_name = 'zvmedia/jinja2/books/edit_book.html'
     success_url = "/books"
-    
-    def get_object(self, queryset=None):
-        return Book.objects.get(slug=self.kwargs.get("book_slug"))
+    context_object_name = 'books'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = BookCategory.objects.all()
+        # context['books'] = Book.objects.get(user=self.request.user)
+        context['categories'] = BookCategory.objects.filter(
+            user=self.request.user)
+        context['user'] = self.request.user
+        context['reading_list'] = BookReadingList.objects.filter(user=self.request.user)
         return context
+
+    def get_queryset(self):
+        return BookCategory.objects.filter(user=self.request.user)
 
     def get_form_kwargs(self, *args, **kwargs):
         form_kwargs = super().get_form_kwargs(*args, **kwargs)
         form_kwargs['request'] = self.request
         return form_kwargs
+
+    def get_object(self, queryset=None):
+        return Book.objects.get(user=self.request.user, slug=self.kwargs['book_slug'])
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -172,6 +221,16 @@ class UpdateBook(LoginRequiredMixin, UpdateView):
         instance.save()
         form.save_m2m()
         return redirect(self.success_url)
+
+
+def delete_book(request, book_slug):
+    if request.method == 'POST':
+        try:
+            Book.objects.get(slug=book_slug).delete()
+        except:
+            response = {'state': False}
+    response = {'state': True}
+    return redirect("books")
 
 
 class CreateBookAuthor(LoginRequiredMixin, CreateView):
@@ -206,7 +265,7 @@ class CreateBookCategory(LoginRequiredMixin, CreateView):
     # redirect_field_name = 'redirect_to'
     model = BookCategory
     form_class = AddBookCategoryForm
-    template_name = 'zvmedia/jinja2/books/add_book.html'
+    template_name = 'zvmedia/jinja2/books/add_category.html'
     success_url = "/books"
 
     def form_valid(self, form):
@@ -220,26 +279,25 @@ class ShowBookSubcategory(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        subcategory = context['books'][0].genre
+        subcategory = context['books'][0].subcategory
         context['title'] = self.kwargs['book_subcategory_slug']
         return context
 
     def get_queryset(self):
-        return Book.objects.filter(subcategory__slug=self.kwargs['book_subcategory_slug'])
+        return Book.objects.filter(user=self.request.user,subcategory__slug=self.kwargs['book_subcategory_slug'])
 
 
-class ShowBookAuthor(LoginRequiredMixin, DetailView):
-    model = BookAuthor
+class ShowBookAuthor(LoginRequiredMixin, ListView):
+    model = Book
     template_name = "zvmedia/jinja2/books/books_subcategory.html"
-    context_object_name = 'authors'
+    context_object_name = 'books'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
     def get_queryset(self):
-        return BookAuthor.objects.get(subcategory__slug=self.kwargs['book_author'])
-
+        return Book.objects.filter(user=self.request.user,author__slug=self.kwargs['author_slug'])
 
 
 class CreateBookSubcategory(LoginRequiredMixin, CreateView):
@@ -247,7 +305,7 @@ class CreateBookSubcategory(LoginRequiredMixin, CreateView):
     # redirect_field_name = 'redirect_to'
     model = Book
     form_class = AddBookSubcategoryForm
-    template_name = 'zvmedia/jinja2/books/add_book.html'
+    template_name = 'zvmedia/jinja2/books/add_subcategory.html'
     success_url = "/books"
 
     def form_valid(self, form):
@@ -260,7 +318,7 @@ class CreateBookReadingList(LoginRequiredMixin, CreateView):
     # redirect_field_name = 'redirect_to'
     model = BookReadingList
     form_class = AddBookReadingListForm
-    template_name = 'zvmedia/jinja2/books/add_book.html'
+    template_name = 'zvmedia/jinja2/books/add_readlist.html'
     success_url = "/books"
 
     def form_valid(self, form):
@@ -270,19 +328,6 @@ class CreateBookReadingList(LoginRequiredMixin, CreateView):
 
 def index(request):
     return render(request, "zvmedia/index.html")
-
-
-# def show_books_genre(request, book_category_slug, book_genre_slug):
-#     genre = BookGenre.objects.get(slug=book_genre_slug)
-#     books = Book.objects.filter(genre=genre)
-#     return render(request, "zvmedia/jinja2/books/books_genre.html",
-#                   {'books': books, 'title': f'Книги по жанру {genre}'})
-
-# def show_books_category(request, book_category_slug):
-#     category = BookCategory.objects.get(slug=book_category_slug)
-#     books = Book.objects.filter(category=category)
-#     return render(request, "zvmedia/jinja2/books/books_category.html",
-#                   {'books': books, 'title': f'Книги по категории {category}'})
 
 
 def userlogin(request):
@@ -306,3 +351,16 @@ def userlogout(request):
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
+
+
+def get_subcategory_by_category(request, category_slug):
+    if request.method == "GET":
+        user = request.user
+        subcategories = BookSubcategory.objects.filter(
+            user=user, category__slug=category_slug)
+        response = {}
+        count = 0
+        for subcategory in subcategories:
+            response[count] = [subcategory.pk, subcategory.name]
+            count += 1
+    return JsonResponse(response)

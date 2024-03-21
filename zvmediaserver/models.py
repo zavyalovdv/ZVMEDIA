@@ -12,7 +12,7 @@ from zvmediaserver.modules.services.utils import unique_slugify_models
 
 
 def user_directory_path(instance, filename):
-    return f'books/{instance.user.name}/{filename}'
+    return f'books/{instance.user.username}/{filename}'
 
 
 class UserProfileSettings(models.Model):
@@ -25,7 +25,7 @@ class Book(models.Model):
                              on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Название",
                             max_length=200, db_index=True)
-    file = models.FileField(verbose_name="Файл", upload_to="user_directory_path")
+    file = models.FileField(verbose_name="Файл", upload_to=user_directory_path)
     author = models.ManyToManyField(
         "BookAuthor", verbose_name="Автор", related_name="book")
     category = models.ForeignKey(
@@ -40,6 +40,8 @@ class Book(models.Model):
         verbose_name="Количество слов", null=True, blank=True)
     time_to_read = models.FloatField(
         verbose_name="Часов на чтение", null=True, blank=True)
+    time_spent = models.FloatField(
+        verbose_name="Часов затрачено", null=True, blank=True, default=0)
     reading_list = models.ManyToManyField(
         "BookReadingList", verbose_name="Список чтения", related_name='book', blank=True)
     is_favorites = models.BooleanField(verbose_name="Избранное", default=False)
@@ -69,7 +71,10 @@ class Book(models.Model):
             self.status = "не читалась"
         if not self.is_favorites:
             self.is_favorites = False
-
+        # if self.time_to_read:
+        #     self.time_to_read = round(self.time_to_read, 1)
+        # if self.time_spent:
+        #     self.time_spent = round(self.time_spent, 1)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -80,7 +85,7 @@ class BookAuthor(models.Model):
     user = models.ForeignKey(User, related_name='authors',
                              on_delete=models.CASCADE)
     name = models.CharField(
-        verbose_name="Имя", max_length=200, unique=True, db_index=True)
+        verbose_name="Имя", max_length=200, db_index=True)
     slug = models.SlugField(verbose_name="Слаг", max_length=255, unique=True)
     create_time = models.DateTimeField(
         verbose_name="Дата создания", auto_now_add=True)
@@ -103,7 +108,7 @@ class BookCategory(models.Model):
     user = models.ForeignKey(User, related_name='categories',
                              on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Категория",
-                            max_length=200, unique=True, db_index=True)
+                            max_length=200, db_index=True)
     slug = models.SlugField(verbose_name="Слаг", max_length=255, unique=True)
     create_time = models.DateTimeField(
         verbose_name="Дата создания", auto_now_add=True)
@@ -127,7 +132,7 @@ class BookSubcategory(models.Model):
     user = models.ForeignKey(User, related_name='subcategories',
                              on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Подкатегория",
-                            max_length=200, unique=True, db_index=True)
+                            max_length=200, db_index=True)
     category = models.ForeignKey(
         BookCategory, verbose_name="Категория", on_delete=models.PROTECT)
     slug = models.SlugField(verbose_name="Слаг", max_length=255, unique=True)
@@ -152,7 +157,7 @@ class BookReadingList(models.Model):
     user = models.ForeignKey(User, related_name='readinglist',
                              on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Название",
-                            max_length=200, unique=True, db_index=True)
+                            max_length=200, db_index=True)
     slug = models.SlugField(verbose_name="Слаг", max_length=255, unique=True)
     create_time = models.DateTimeField(
         verbose_name="Дата создания", auto_now_add=True)
@@ -175,7 +180,7 @@ class BookTag(models.Model):
     user = models.ForeignKey(User, related_name='tags',
                              on_delete=models.CASCADE)
     name = models.CharField(
-        verbose_name="Тэг", max_length=200, unique=True, db_index=True)
+        verbose_name="Тэг", max_length=200, db_index=True)
     slug = models.SlugField(verbose_name="Слаг", max_length=255, unique=True)
     create_time = models.DateTimeField(
         verbose_name="Дата создания", auto_now_add=True)

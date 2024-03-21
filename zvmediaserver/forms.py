@@ -28,16 +28,14 @@ class AddBookForm(ModelForm):
 
     def clean(self):
         if self.data['author']:
-            author, is_created = BookAuthor.objects.get_or_create(
-                user=self.request.user, name=self.data['author'], slug=unique_slugify_models(self.instance, self.data['author']))
+            self.AuthorModelObject = BookAuthor()
+            author, is_created = BookAuthor.objects.get_or_create(user=self.request.user, name=self.data['author'], slug=unique_slugify_models(self.AuthorModelObject, self.data['author']))
             if not author and not is_created:
                 raise forms.ValidationError("Ошибка добавления автора")
         else:
             raise forms.ValidationError("Ошибка добавления автора")
-
         # self.cleaned_data['user'] = self.request.user
-        self.cleaned_data['author'] = BookAuthor.objects.filter(
-            slug=author.slug)
+        self.cleaned_data['author'] = BookAuthor.objects.filter(user=self.request.user).filter(slug=author.slug)
         return self.cleaned_data
 
 
@@ -116,6 +114,7 @@ class AddBookReadingListForm(ModelForm):
         model = BookReadingList
         fields = ['name']
         widgets = {'name': TextInput(attrs={'class': 'form-control'})}
+        
 
 
 class UserLoginForm(AuthenticationForm):
@@ -123,3 +122,18 @@ class UserLoginForm(AuthenticationForm):
         label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(
         label='Пароль', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+# def clean(self):
+#     if self.data['author']:
+#         author, is_created = BookAuthor.objects.get_or_create(
+#             user=self.request.user, name=self.data['author'], slug=unique_slugify_models(self.instance, self.data['author']))
+#         if not author and not is_created:
+#             raise forms.ValidationError("Ошибка добавления автора")
+#     else:
+#         raise forms.ValidationError("Ошибка добавления автора")
+
+#     # self.cleaned_data['user'] = self.request.user
+#     self.cleaned_data['author'] = BookAuthor.objects.filter(
+#         slug=author.slug)
+#     return self.cleaned_data

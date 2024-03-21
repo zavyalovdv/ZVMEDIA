@@ -2,33 +2,88 @@
 
 {% block content %}
 <div class="content">
-    <h2>Ректирование {{ object }}</h2>
+    <h2>Новая книга</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <label for="name">Название </label>
         <input id="name" type="text" name="name" value="{{ object.name }}" class="form-control">
         <label for="name">Автор</label>
         {% for author in object.author.all %}
-        <input id="author" type="text" name="author" value="{{ author.name }}" class="form-control">
+            <input id="author" type="text" name="author" value="{{author}}" class="form-control">
         {% endfor %}
         <label for="file">Файл</label>
         <input id="file" type="file" name="file" value="{{ object.file.filename }}" class="form-control">
         <label for="name">Категория </label>
-        <select name="category" class="form-control" required="" id="id_category">
+        <select name="category" class="form-control select-category" required="" id="id_category">
             {% for category in categories.all %}
-            <option value="{{ forloop.counter }}">{{ category }}</option>
-            {% endfor %}
-          </select>
-        <label for="name">Подкатегория </label>
-        <select name="subcategory" class="form-control" required="" id="id_subcategory" multiple="">
-            {% for subcategory in object.subcategory.all %}
-            <option value="{{ forloop.counter }}">{{ subcategory.name }}</option>
+            <option slug="{{category.slug}}" class="categories" value="{{ category.pk }}">{{ category }}</option>
             {% endfor %}
         </select>
-
-        <input id="name" type="select" name="name" value="{{ object.name }}" class="form-control">
+        <label for="name">Подкатегория </label>
+        <select name="subcategory" class="form-control" required="" id="id_subcategory" multiple=""></select>
+        <label for="name">Список чтения </label>
+        <select name="reading_list" class="form-control select-reading_list" required="" id="id_reading_list">
+            {% for reading_list in reading_list.all %}
+            <option slug="{{reading_list.slug}}" class="reading_list" value="{{ reading_list.pk }}">{{ reading_list }}</option>
+            {% endfor %}
+        </select>
         <input type="submit" value="Submit" class="form-control">
         {{ field.errors }}
     </form>
 </div>
+
+<script>
+    function exec() {
+        const current_user = "{{ user }}"
+        const selectCategory = document.querySelector('.select-category');
+        slug = selectCategory.options[selectCategory.selectedIndex].getAttribute('slug')
+        console.log(slug)
+        selectCategory.addEventListener('change', () => {
+            slug = selectCategory.options[selectCategory.selectedIndex].getAttribute('slug')
+            console.log(slug)
+            getSubcategories(current_user, slug)
+        })
+        getSubcategories(current_user, slug)
+    }
+
+    function getSubcategories(current_user, slug) {
+        const uploadurl = "/books/getsubcategories/" + slug
+        fetch(uploadurl,
+            {
+                method: "GET",
+            })
+            .then(response => subcategories = response.json())
+            // .then(subcategories => console.log(subcategories))
+            .then(subcategories => setSubcategories(subcategories))
+            .catch(err => alert(err));
+    }
+
+    function setSubcategories(subcategories) {
+        // console.log(typeof(subcategories))
+        // console.log(Object.keys(subcategories).length)
+        // console.log(subcategories)
+        size = Object.keys(subcategories).length
+        if (size == 0){
+            let subcategoryOpttion = document.createElement('option');
+            select.innerHTML = ""
+            subcategoryOpttion.value = 1;
+            subcategoryOpttion.innerHTML = "Для данной категории не существует  подкатегорий";
+            select.appendChild(subcategoryOpttion);
+            return
+        }
+        select = document.getElementById('id_subcategory');
+        select.innerHTML = ""
+        for (let index = 0; index < size; index++) {
+            let subcategoryOpttion = document.createElement('option');
+            subcategoryOpttion.value = subcategories[index][0];
+            subcategoryOpttion.innerHTML = subcategories[index][1];
+            console.log(subcategories[index])
+            select.appendChild(subcategoryOpttion);
+        }
+
+
+    }
+    window.onload = exec()
+</script>
+
 {% endblock %}

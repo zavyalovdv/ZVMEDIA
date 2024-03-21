@@ -39,12 +39,6 @@ a {
   height: 100%;
   padding: 13px 20px;
 }
-.sidebar {
-  min-height: calc(100vh - 50px);
-  color: white;
-  font-size: 16px;
-  width: 250px;
-}
 
 .content {
   display: flex;
@@ -122,4 +116,24 @@ tr td:last-child {
     -moz-border-radius-bottomright: 5px;
     -webkit-border-top-right-radius: 5px;
     -webkit-border-bottom-right-radius: 5px;
+}
+
+.sidebar {
+  min-height: calc(100vh - 50px);
+  color: white;
+  font-size: 16px;
+  width: 250px;
+}
+
+.sidebar .btn-toggle {
+  color: white;
+  font-size: 20px
+}
+.sidebar .list-unstyled a {
+  color: white;
+  font-size: 16px;
+}
+
+.btn-toggle-nav a {
+  margin-left: 20px;
 }

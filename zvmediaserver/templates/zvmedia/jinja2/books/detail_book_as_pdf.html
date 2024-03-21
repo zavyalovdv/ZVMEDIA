@@ -572,6 +572,37 @@
   <input type="file" id="fileInput" class="hidden">
   <script>
     function exec() {
+      const slug = ((document.baseURI).split("=")[1]).split("/")[3]
+      const uploadurl = '/books/setpdf/' + slug
+      const timeupdateurl = '/books/timeupdate/' + slug
+      let seconds = 0;
+      let interval;
+
+      interval = setInterval(updateTime, 1000);
+
+      function updateTime() {
+        seconds++;
+        if (seconds % 60 == 0) {
+          fetch(timeupdateurl,
+            {
+              headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+              },
+              method: "POST",
+              body: JSON.stringify({"seconds":seconds}),
+            })
+            .then(response => console.log(response),seconds=0)
+            .catch(err => alert(err));
+        }
+        // if (seconds === 60) {
+        //   minutes++;
+        //   seconds = 0;
+        // }
+        console.log(`${seconds.toString().padStart(2, '0')}`)
+        // timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+
       console.log("Init()")
       uploadButton = document.getElementById('secondarySaveFile')
       uploadButton.addEventListener('click', () => {
@@ -579,8 +610,6 @@
       })
 
       async function uploadBook() {
-        const slug = ((document.baseURI).split("=")[1]).split("/")[3]
-        const uploadurl = '/books/setpdf/' + slug
         if (PDFViewerApplication._saveInProgress) {
           return;
         }
