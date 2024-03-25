@@ -8,7 +8,7 @@ class BookAdmin(admin.ModelAdmin):
     list_display = ('name', 'file', 'category', 'status', 'pages_count',
                     'words_count', 'time_to_read', 'slug', 'create_time', 'update_time')
     # prepopulated_fields = {'slug': ('name',)}
-    fields = ['name', 'file', 'author', 'category', 'subcategory']
+    fields = ['name', 'file', 'author', 'category', 'subcategory','target_date']
 
 
 class BookAuthorAdmin(admin.ModelAdmin):

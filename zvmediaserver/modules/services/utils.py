@@ -52,8 +52,6 @@ class UserToFormMixin(object):
 
 
 
-
-
 # def create_book_textdata(instance):
 #     if pathlib.Path(instance.file.path).suffix == ".pdf":
 #         pdf_object = (PdfReader(open(f"{instance.file.path}", 'rb'))).pages

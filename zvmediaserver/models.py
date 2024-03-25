@@ -1,3 +1,4 @@
+from decimal import Decimal
 import os
 import pathlib
 
@@ -8,7 +9,6 @@ from PyPDF2 import PdfFileReader
 from django.db import models
 from epub_conversion.utils import open_book, convert_epub_to_lines
 from zvmediaserver.modules.services.utils import unique_slugify_models
-
 
 
 def user_directory_path(instance, filename):
@@ -42,6 +42,12 @@ class Book(models.Model):
         verbose_name="Часов на чтение", null=True, blank=True)
     time_spent = models.FloatField(
         verbose_name="Часов затрачено", null=True, blank=True, default=0)
+    target_date = models.DateField(
+        verbose_name="Прочитать к", null=True, blank=True)
+    current_page = models.IntegerField(
+        verbose_name="Текущая страница", null=True, blank=True, default=1)
+    progress = models.DecimalField(
+        verbose_name="Прогресс",max_digits=5, decimal_places=2, null=True, blank=True)
     reading_list = models.ManyToManyField(
         "BookReadingList", verbose_name="Список чтения", related_name='book', blank=True)
     is_favorites = models.BooleanField(verbose_name="Избранное", default=False)
@@ -71,8 +77,10 @@ class Book(models.Model):
             self.status = "не читалась"
         if not self.is_favorites:
             self.is_favorites = False
-        # if self.time_to_read:
-        #     self.time_to_read = round(self.time_to_read, 1)
+        if self.progress:
+             self.progress = Decimal(self.progress).quantize(Decimal("1.00"))
+             print(self.progress)
+             print(type(self.progress))
         # if self.time_spent:
         #     self.time_spent = round(self.time_spent, 1)
         super().save(*args, **kwargs)

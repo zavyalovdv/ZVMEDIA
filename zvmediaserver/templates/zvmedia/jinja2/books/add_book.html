@@ -19,12 +19,16 @@
         </select>
         <label for="name">Подкатегория </label>
         <select name="subcategory" class="form-control" required="" id="id_subcategory" multiple=""></select>
+        <label for="target_date">Прочитать до</label>
+        <input id="target_date" type="date" name="target_date" value="" class="form-control">
+        {% if reading_list %}
         <label for="name">Список чтения </label>
-        <select name="reading_list" class="form-control select-reading_list" required="" id="id_reading_list">
+        <select name="reading_list" class="form-control select-reading_list" id="id_reading_list">
             {% for reading_list in reading_list.all %}
             <option slug="{{reading_list.slug}}" class="reading_list" value="{{ reading_list.pk }}">{{ reading_list }}</option>
             {% endfor %}
         </select>
+        {% endif %}
         <input type="submit" value="Submit" class="form-control">
         {{ field.errors }}
     </form>

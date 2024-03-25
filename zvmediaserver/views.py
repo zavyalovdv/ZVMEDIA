@@ -1,5 +1,6 @@
 import os
 import json
+import datetime
 from django.core.files import File
 from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
 from django.http import JsonResponse
@@ -17,12 +18,24 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 
 
+
 class ShowBooks(LoginRequiredMixin, ListView):
     template_name = "zvmedia/jinja2/books/books.html"
     context_object_name = 'books'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['authors'] = BookAuthor.objects.filter(user=self.request.user)
+        context['categories'] = BookCategory.objects.filter(
+            user=self.request.user)
+        context['subcategories'] = BookSubcategory.objects.filter(
+            user=self.request.user)
+        context['readinglists'] = BookReadingList.objects.filter(
+            user=self.request.user)
+        context['favorites'] = Book.objects.filter(
+            user=self.request.user, is_favorites=True)
+        context['tags'] = BookTag.objects.filter(user=self.request.user)
+        context['today'] = datetime.date.today()
         return context
 
     def get_queryset(self):
@@ -75,7 +88,7 @@ def book_get_pdf(request, book_slug):
     try:
         return FileResponse(file)
     except:
-        return render(request, template_name=template, context={'book': 'error'})
+        return render(request, template_name="", context={'book': 'error'})
     else:
         my_file.close()
     finally:
@@ -111,22 +124,21 @@ def book_set_pdf(request, book_slug):
 
 
 @csrf_exempt
-def update_time(request, book_slug):
+def ajax_update_extradata_book(request, book_slug):
     if request.method == "POST":
+        ajax_request = json.load(request)
         book = Book.objects.get(slug=book_slug)
         current_time_spent = book.time_spent
-        update_time_spent = float((json.load(request)['seconds'])/60)/60
-
-        # if current_time_spent > 0.0:
+        current_page = ajax_request['current_page']
+        progress = ((current_page / book.pages_count) * 100)
+        update_time_spent = float((ajax_request['seconds'])/60)/60
         book.time_spent = current_time_spent + update_time_spent
-        # else:
-        #   book.time_spent = update_time_spent
+        book.current_page = current_page
+        book.progress = float(f"{progress:.2f}")
+        if (book.progress == 100.00):
+            book.status = "прочитана"
         try:
-            print(current_time_spent)
-            print(update_time_spent)
-            print(book.time_spent)
-            # book.time_spent = 0.0
-            book.save(update_fields=["time_spent"])
+            book.save()
         except:
             response = {'is_taken': False}
         response = {
@@ -167,7 +179,8 @@ class CreateBook(LoginRequiredMixin, CreateView):
         context['categories'] = BookCategory.objects.filter(
             user=self.request.user)
         context['user'] = self.request.user
-        context['reading_list'] = BookReadingList.objects.filter(user=self.request.user)
+        context['reading_list'] = BookReadingList.objects.filter(
+            user=self.request.user)
         return context
 
     def get_queryset(self):
@@ -200,8 +213,11 @@ class UpdateBook(LoginRequiredMixin, UpdateView):
         # context['books'] = Book.objects.get(user=self.request.user)
         context['categories'] = BookCategory.objects.filter(
             user=self.request.user)
+        context['subcategories'] = BookSubcategory.objects.filter(
+            user=self.request.user, category=context['object'].category)
         context['user'] = self.request.user
-        context['reading_list'] = BookReadingList.objects.filter(user=self.request.user)
+        context['reading_list'] = BookReadingList.objects.filter(
+            user=self.request.user)
         return context
 
     def get_queryset(self):
@@ -252,8 +268,16 @@ class ShowBookCategory(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        category = context['books'][0].category
-        context['title'] = category.name
+        context['authors'] = BookAuthor.objects.filter(user=self.request.user)
+        context['categories'] = BookCategory.objects.filter(
+            user=self.request.user)
+        context['subcategories'] = BookSubcategory.objects.filter(
+            user=self.request.user)
+        context['readinglists'] = BookReadingList.objects.filter(
+            user=self.request.user)
+        context['tags'] = BookTag.objects.filter(user=self.request.user)
+        context['favorites'] = Book.objects.filter(
+            user=self.request.user, is_favorites=True)
         return context
 
     def get_queryset(self):
@@ -284,7 +308,7 @@ class ShowBookSubcategory(ListView):
         return context
 
     def get_queryset(self):
-        return Book.objects.filter(user=self.request.user,subcategory__slug=self.kwargs['book_subcategory_slug'])
+        return Book.objects.filter(user=self.request.user, subcategory__slug=self.kwargs['book_subcategory_slug'])
 
 
 class ShowBookAuthor(LoginRequiredMixin, ListView):
@@ -297,7 +321,7 @@ class ShowBookAuthor(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        return Book.objects.filter(user=self.request.user,author__slug=self.kwargs['author_slug'])
+        return Book.objects.filter(user=self.request.user, author__slug=self.kwargs['author_slug'])
 
 
 class CreateBookSubcategory(LoginRequiredMixin, CreateView):
@@ -326,6 +350,30 @@ class CreateBookReadingList(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class DetailBookReadingList(LoginRequiredMixin, DetailView):
+    model = BookReadingList
+    context_object_name = "readinglist"
+    template_name = 'zvmedia/jinja2/books/detail_readinglist.html'
+    
+    def get_object(self, queryset=None):
+        return BookReadingList.objects.get(user=self.request.user, slug=self.kwargs['readinglist_slug'])
+        return BookReadingList.objects.get(user=self.request.user, slug=self.kwargs['readinglist_slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['authors'] = BookAuthor.objects.filter(user=self.request.user)
+        context['categories'] = BookCategory.objects.filter(
+            user=self.request.user)
+        context['subcategories'] = BookSubcategory.objects.filter(
+            user=self.request.user)
+        context['readinglists'] = BookReadingList.objects.filter(
+            user=self.request.user)
+        context['tags'] = BookTag.objects.filter(user=self.request.user)
+        context['favorites'] = Book.objects.filter(
+            user=self.request.user, is_favorites=True)
+        return context
+    
+    
 def index(request):
     return render(request, "zvmedia/index.html")
 
@@ -362,5 +410,19 @@ def get_subcategory_by_category(request, category_slug):
         count = 0
         for subcategory in subcategories:
             response[count] = [subcategory.pk, subcategory.name]
+            count += 1
+    return JsonResponse(response)
+
+
+def get_categories(request):
+    if request.method == "GET":
+        categories = BookCategory.objects.filter(
+            user=request.user)
+        response = {}
+        count = 0
+        print(categories)
+        for category in categories:
+            print(category)
+            response[count] = [category.pk, category.name]
             count += 1
     return JsonResponse(response)

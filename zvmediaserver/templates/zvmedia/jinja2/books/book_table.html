@@ -6,12 +6,15 @@
         <th>Категория</th>
         <th>Подкатегория</th>
         <th>Статус</th>
-        <th>Страниц</th>
         <th>Слов</th>
+        <th>Страниц</th>
+        <th>Текущая страница</th>
         <th>Часов на чтение</th>
         <th>Часов затрачено</th>
+        <th>Прогресс</th>
+        <th>Прочитать к</th>
+        <th>Осталось времени</th>
         <th>Избранное</th>
-        <th>Список чтения</th>
         <th>Действия</th>
     </thead>
     <tbody class="book-body">
@@ -33,20 +36,49 @@
                 {{book.status}}
             </td>
             <td>
+                {{book.words_count}}
+            </td>
+            <td>
                 {{book.pages_count}}
             </td>
             <td>
-                {{book.words_count}}
+                {% if book.current_page == 1 %}
+                -
+                {% else %}
+                {{book.current_page}}
+                {%endif%}
+
             </td>
             <td>
                 {{book.time_to_read}}
             </td>
             <td>
                 {% if book.time_spent == 0.0 %}
-                0
+                    0
                 {% else %}
-                {{ book.time_spent|floatformat }}
+                    {{ book.time_spent|floatformat }}
                 {%endif%}
+            </td>
+            <td>
+                {% if book.progress == None %}
+                    0.0 %
+                {% else %}
+                {{ book.progress |floatformat }} %
+                {% endif %}
+            </td>
+            <td>
+                {% if book.target_date == None %}
+                    -
+                {% else %}
+                    {{ book.target_date }}
+                {% endif %}
+            </td>
+            <td>
+                {% if book.target_date == None %}
+                    -
+                {% else %}
+                    Осталось {{ today |timesince:book.target_date }}
+                {% endif %}
             </td>
             <td>
                 {% if book.is_favorites == False %}
@@ -65,11 +97,6 @@
                 {% endif %}
             </td>
             <td>
-                {% for reading_list in book.reading_list.all %}
-                <a href="#">{{reading_list.name}}</a>
-                {% endfor %}
-            </td>
-            <td>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary">
                         <a href="{% url 'pdf_init_book' book.slug %}">Читать</a>
@@ -79,9 +106,9 @@
                         <span class="visually-hidden">Переключатель выпадающего списка</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <a href="#" onclick="addReadingList">Добавить в список</a>
+                        <!-- <a onclick="addReadingList()" href="#">Добавить в список</a> -->
                         <a href="{% url 'edit_book' book.slug %}">Редактировать</a>
-                        <a href="{% url 'remove_book' book.slug %}" onclick="removeBook">Удалить</a>
+                        <a onclick="removeBook()" href="{% url 'remove_book' book.slug %}">Удалить</a>
                     </ul>
                 </div>
             </td>
@@ -92,9 +119,12 @@
 
 <script>
 
-    function addReadingList(){
-        console.log(this)
-    }
+    // function addReadingList(){
+    //     let readinglistsJS = "{{ readinglists_json }}"
+    //     console.log(readinglistsJS)
+    //     console.log(typeof(readinglistsJS))
+
+    // }
 
     function removeBook() {
         console.log(this)

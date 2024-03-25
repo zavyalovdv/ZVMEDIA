@@ -2,69 +2,75 @@
     <ul class="list-unstyled ps-0">
         <li class="mb-1">
             <button class="btn btn-toggle align-items-centerrounded collapsed" data-bs-toggle="collapse"
-                data-bs-target="#home-collapse" aria-expanded="true">
+                data-bs-target="#category-collapse" aria-expanded="true">
                 Категории
             </button>
-            <div class="collapse show" id="home-collapse">
+            <div class="collapse show" id="category-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    {% for book in books %}
-                        <li><a href="{% url 'books_category' book.category.slug %}" class="rounded">{{ book.category }}</a></li>
+                    {% for category in categories %}
+                        <li><a href="{% url 'books_category' category.slug %}" class="rounded">{{ category }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#subcategory-collapse" aria-expanded="true">
                 Подкатегории
             </button>
-            <div class="collapse show" id="dashboard-collapse" style="">
+            <div class="collapse show" id="subcategory-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    {% for book in books %}
-                        {% for subcategory in book.subcategory.all %}
+                        {% for subcategory in subcategories %}
                             <li><a href="{% url 'books_subcategory' subcategory.slug %}" class="rounded">{{ subcategory }}</a></li>
                         {% endfor %}
-                    {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#tag-collapse" aria-expanded="true">
+                Тэги
+            </button>
+            <div class="collapse show" id="tag-collapse" style="">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        {% for tag in tags %}
+                            <li><a href="{% url 'books_subcategory' tag.slug %}" class="rounded">{{ tag }}</a></li>
+                        {% endfor %}
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#author-collapse" aria-expanded="true">
                 Авторы
             </button>
-            <div class="collapse show" id="orders-collapse" style="">
+            <div class="collapse show" id="author-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    {% for book in books %}
-                        {% for author in book.author.all %}
+
+                        {% for author in authors %}
+                        
                         <li><a href="{% url 'books_author' author.slug %}" class="rounded">{{ author  }}</a></li>
                         {% endfor %}
-                    {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#readinglist-collapse" aria-expanded="true">
                 Списки чтения
             </button>
-            <div class="collapse show" id="orders-collapse" style="">
+            <div class="collapse show" id="readinglist-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    {% for book in books %}
-                        {% for readinglist in book.reading_list.all %}
-                            <li><a href="#" class="rounded">{{ readinglist }}</a></li>
-                        {% endfor %}
+                    {% for readinglist in readinglists %}
+                        <li><a href="{% url 'detail_readinglist' readinglist.slug %}" class="rounded">{{ readinglist }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#favorites-collapse" aria-expanded="true">
                 Избранное
             </button>
-            <div class="collapse show" id="orders-collapse" style="">
+            <div class="collapse show" id="favorites-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    {% for book in books %}
-                        {% if book.is_favorites == True %}
-                            <li><a href="#" class="rounded">{{ book }}</a></li>
-                        {% endif %}
+                    {% for favorite in favorites %}
+                        <li><a href="#" class="rounded">{{ favorite }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
