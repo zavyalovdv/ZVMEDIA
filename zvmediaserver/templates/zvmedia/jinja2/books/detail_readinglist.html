@@ -7,57 +7,96 @@
             <div class="content">
                 <table class="book-list text-center">
                     <thead class="book-head">
-                        <th>Порядок</th>
+                        <th>Позиция</th>
                         <th>Название</th>
                         <th>Автор</th>
                         <th>Категория</th>
                         <th>Подкатегория</th>
                         <th>Статус</th>
-                        <th>Страниц</th>
                         <th>Слов</th>
+                        <th>Страниц</th>
+                        <th>Текущая страница</th>
                         <th>Часов на чтение</th>
                         <th>Часов затрачено</th>
+                        <th>Прогресс</th>
+                        <th>Прочитать к</th>
+                        <th>Осталось времени</th>
                         <th>Избранное</th>
-                        <th>Список чтения</th>
                         <th>Действия</th>
                     </thead>
+
+                    {% for books in readinglists %}
+                        {% for book in books.books.all %}
+                            {{book}}
+                        {%endfor%}    
+                    {% endfor %}
                     <tbody class="book-body">
-                        {% for book in readinglist.book.all %}
+
+                        {% for item in book_sequence %}
                         <tr>
-                            <td><a href="">{{ forloop.counter }}</a></td>
-                            <td><a href="{% url 'browser_detail_book' book.slug %}">{{ book.name }}</a></td>
+                            <td>{{ item.position }}</td>
+                            <td><a href="{% url 'browser_detail_book' item.book.slug %}">{{ item.book.name }}</a></td>
                             <td>
                                 {% for author in book.author.all %}
                                 <a href="{% url 'books_author' author.slug %}">{{author.name}}</a>
                                 {% endfor %}
                             </td>
-                            <td><a href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>
+                            <td><a href="{% url 'books_category' item.book.category.slug %}">{{item.book.category}}</a></td>
                             <td>
                                 {% for subcategory in book.subcategory.all %}
-                                <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}}</a>
+                                <a href="{% url 'books_subcategory' item.subcategory.slug %}">{{item.subcategory.name}}</a>
                                 {% endfor %}
                             </td>
                             <td>
-                                {{book.status}}
+                                {{item.book.status}}
                             </td>
                             <td>
-                                {{book.pages_count}}
+                                {{item.book.words_count}}
                             </td>
                             <td>
-                                {{book.words_count}}
+                                {{item.book.pages_count}}
                             </td>
                             <td>
-                                {{book.time_to_read}}
-                            </td>
-                            <td>
-                                {% if book.time_spent == 0.0 %}
-                                0
+                                {% if item.book.current_page == 1 %}
+                                -
                                 {% else %}
-                                {{ book.time_spent|floatformat }}
+                                {{item.book.current_page}}
+                                {%endif%}
+                
+                            </td>
+                            <td>
+                                {{item.book.time_to_read}}
+                            </td>
+                            <td>
+                                {% if item.book.time_spent == 0.0 %}
+                                    0
+                                {% else %}
+                                    {{ item.book.time_spent|floatformat }}
                                 {%endif%}
                             </td>
                             <td>
-                                {% if book.is_favorites == False %}
+                                {% if item.book.progress == None %}
+                                    0.0 %
+                                {% else %}
+                                {{ item.book.progress |floatformat }} %
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.book.target_date == None %}
+                                    -
+                                {% else %}
+                                    {{ item.book.target_date }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.book.target_date == None %}
+                                    -
+                                {% else %}
+                                    {{ today |timesince:item.book.target_date }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.book.is_favorites == False %}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star"
                                     slug="{{ book.slug }}" favorites="{{ book.is_favorites }}" viewBox="0 0 16 16">
                                     <path
@@ -73,14 +112,9 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% for reading_list in book.reading_list.all %}
-                                <a id="readinglist-name" href="#">{{reading_list.name}}</a>
-                                {% endfor %}
-                            </td>
-                            <td>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-secondary">
-                                        <a href="{% url 'pdf_init_book' book.slug %}">Читать</a>
+                                        <a href="{% url 'pdf_init_book' item.book.slug %}">Читать</a>
                                     </button>
                                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -88,8 +122,8 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <!-- <a onclick="addReadingList()" href="#">Добавить в список</a> -->
-                                        <a href="{% url 'edit_book' book.slug %}">Редактировать</a>
-                                        <a onclick="removeBook()" href="{% url 'remove_book' book.slug %}">Удалить</a>
+                                        <a href="{% url 'edit_book' item.book.slug %}">Редактировать</a>
+                                        <a onclick="removeBook()" href="{% url 'remove_book' item.book.slug %}">Удалить</a>
                                     </ul>
                                 </div>
                             </td>

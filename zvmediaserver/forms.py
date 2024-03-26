@@ -16,14 +16,14 @@ class AddBookForm(ModelForm):
     class Meta:
         model = Book
         fields = [
-            'name', 'file', 'author', 'category', 'subcategory', 'target_date', 'reading_list', 'tag']
+            'name', 'file', 'author', 'category', 'subcategory', 'target_date', 'tag']
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'author': TextInput(attrs={'class': 'form-control'}),
             'category': Select(attrs={'class': 'form-control'}),
             'subcategory': SelectMultiple(attrs={'class': 'form-control'}),
             'target_date': DateInput(attrs={'class': 'form-control'}),
-            'reading_list': SelectMultiple(attrs={'class': 'form-control'}),
+            #'reading_list': SelectMultiple(attrs={'class': 'form-control'}),
             'file': FileInput(attrs={'class': 'form-control'}),
             'tag': SelectMultiple(attrs={'class': 'form-control'}),
         }
@@ -56,14 +56,14 @@ class ChangeBookForm(ModelForm):
     class Meta:
         model = Book
         fields = [
-            'name', 'file', 'author', 'category', 'subcategory','target_date','reading_list', 'tag']
+            'name', 'file', 'author', 'category', 'subcategory','target_date', 'tag']
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'author': TextInput(attrs={'class': 'form-control'}),
             'category': Select(attrs={'class': 'form-control'}),
             'subcategory': SelectMultiple(attrs={'class': 'form-control'}),
             'target_date': DateInput(attrs={'class': 'form-control'}),
-            'reading_list': SelectMultiple(attrs={'class': 'form-control'}),
+            #'reading_list': SelectMultiple(attrs={'class': 'form-control'}),
             'file': FileInput(attrs={'class': 'form-control'}),
             'tag': SelectMultiple(attrs={'class': 'form-control'}),
         }

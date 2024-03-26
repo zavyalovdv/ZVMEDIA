@@ -8,33 +8,36 @@ class BookAdmin(admin.ModelAdmin):
     list_display = ('name', 'file', 'category', 'status', 'pages_count',
                     'words_count', 'time_to_read', 'slug', 'create_time', 'update_time')
     # prepopulated_fields = {'slug': ('name',)}
-    fields = ['name', 'file', 'author', 'category', 'subcategory','target_date']
+    fields = ['user','name', 'file', 'author', 'category', 'subcategory','target_date']
 
 
 class BookAuthorAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['user','name']
     # prepopulated_fields = {'slug': ('name',)}
 
 
 class BookCategoryAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['user','name']
     # prepopulated_fields = {'slug': ('name',)}
 
 
 class BookSubcategoryAdmin(admin.ModelAdmin):
-    fields = ['name', 'category']
+    fields = ['user','name', 'category']
     # prepopulated_fields = {'slug': ('name',)}
 
 
 class BookTagAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['user','name']
     # prepopulated_fields = {'slug': ('name',)}
 
 
 class BookReadingListAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['user','name','books','books_ordering']
     # prepopulated_fields = {'slug': ('name',)}
 
+
+class BookOrderingInReadingListAdmin(admin.ModelAdmin):
+    fields = ['user','position','book']
 
 admin.site.register(Book, BookAdmin)
 admin.site.register(BookAuthor, BookAuthorAdmin)
@@ -42,3 +45,4 @@ admin.site.register(BookCategory, BookCategoryAdmin)
 admin.site.register(BookSubcategory, BookSubcategoryAdmin)
 admin.site.register(BookTag, BookTagAdmin)
 admin.site.register(BookReadingList, BookReadingListAdmin)
+admin.site.register(BookOrderingInReadingList, BookOrderingInReadingListAdmin)

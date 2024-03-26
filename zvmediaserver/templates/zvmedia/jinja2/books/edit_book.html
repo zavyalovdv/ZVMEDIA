@@ -34,10 +34,10 @@
             {% endfor %}
         </select>
         <label for="target_date">Прочитать до</label>
-        <input id="target_date" type="date" name="target_date" value="" class="form-control">
+        <input id="target_date" type="date" name="target_date" value="{{book.target_date|date:'Y-m-d'}}" class="form-control">
         {% if reading_list %}
         <label for="name">Список чтения </label>
-        <select name="reading_list" class="form-control select-reading_list" id="id_reading_list">
+        <select name="reading_list" class="form-control select-reading_list" id="id_reading_list" multiple="">
             {% for reading_list in reading_list.all %}
             <option slug="{{reading_list.slug}}" class="reading_list" value="{{ reading_list.pk }}">{{ reading_list }}</option>
             {% endfor %}

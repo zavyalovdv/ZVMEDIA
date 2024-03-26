@@ -206,7 +206,7 @@ class UpdateBook(LoginRequiredMixin, UpdateView):
     form_class = ChangeBookForm
     template_name = 'zvmedia/jinja2/books/edit_book.html'
     success_url = "/books"
-    context_object_name = 'books'
+    context_object_name = 'book'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -357,7 +357,6 @@ class DetailBookReadingList(LoginRequiredMixin, DetailView):
     
     def get_object(self, queryset=None):
         return BookReadingList.objects.get(user=self.request.user, slug=self.kwargs['readinglist_slug'])
-        return BookReadingList.objects.get(user=self.request.user, slug=self.kwargs['readinglist_slug'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -371,6 +370,8 @@ class DetailBookReadingList(LoginRequiredMixin, DetailView):
         context['tags'] = BookTag.objects.filter(user=self.request.user)
         context['favorites'] = Book.objects.filter(
             user=self.request.user, is_favorites=True)
+        # context['book_sequence'] = BookOrderingInReadingList.objects.filter(
+        #     user=self.request.user,reading_list__slug=self.kwargs['readinglist_slug']).order_by('position')
         return context
     
     
