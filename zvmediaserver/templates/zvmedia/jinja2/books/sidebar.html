@@ -2,96 +2,116 @@
     <ul class="list-unstyled ps-0">
         <li class="mb-1">
             <button class="btn btn-toggle align-items-centerrounded collapsed" data-bs-toggle="collapse"
-                data-bs-target="#category-collapse" aria-expanded="true">
+                data-bs-target="#category-collapse" aria-expanded="false">
+                <span class="fas fa-list"></span>
                 Категории
+                <span class="fas fa-angles-down" style="display: none"></span>
             </button>
-            <div class="collapse show" id="category-collapse">
+            <div class="collapse" id="category-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     {% for category in categories %}
-                        <li><a href="{% url 'books_category' category.slug %}" class="rounded">{{ category }}</a></li>
+                    <li><a href="{% url 'books_category' category.slug %}" class="rounded">{{ category }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#subcategory-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded collapsed" data-bs-toggle="collapse"
+                data-bs-target="#subcategory-collapse" aria-expanded="false">
+                <span class="fas fa-table"></span>
                 Подкатегории
             </button>
-            <div class="collapse show" id="subcategory-collapse" style="">
+            <div class="collapse" id="subcategory-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        {% for subcategory in subcategories %}
-                            <li><a href="{% url 'books_subcategory' subcategory.slug %}" class="rounded">{{ subcategory }}</a></li>
-                        {% endfor %}
+                    {% for subcategory in subcategories %}
+                    <li><a href="{% url 'books_subcategory' subcategory.slug %}" class="rounded">{{ subcategory }}</a>
+                    </li>
+                    {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#tag-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse"
+                data-bs-target="#tag-collapse" aria-expanded="true">
+                <span class="fas fa-tags"></span>
                 Тэги
             </button>
             <div class="collapse show" id="tag-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        {% for tag in tags %}
-                            <li><a href="{% url 'books_subcategory' tag.slug %}" class="rounded">{{ tag }}</a></li>
-                        {% endfor %}
+                    {% for tag in tags %}
+                    <li><a href="{% url 'books_subcategory' tag.slug %}" class="rounded">{{ tag }}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#author-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded collapsed" data-bs-toggle="collapse"
+                data-bs-target="#author-collapse" aria-expanded="false">
+                <span class="fas fa-user-tie"></span>
                 Авторы
             </button>
-            <div class="collapse show" id="author-collapse" style="">
+            <div class="collapse" id="author-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 
-                        {% for author in authors %}
-                        
-                        <li><a href="{% url 'books_author' author.slug %}" class="rounded">{{ author  }}</a></li>
-                        {% endfor %}
+                    {% for author in authors %}
+
+                    <li><a href="{% url 'books_author' author.slug %}" class="rounded">{{ author }}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#readinglist-collapse" aria-expanded="true">
+            <button class="btn btn-toggle align-items-centerrounded collapsed" data-bs-toggle="collapse"
+                data-bs-target="#readinglist-collapse" aria-expanded="false">
+                <span class="fas fa-book-open"></span>
                 Списки чтения
             </button>
-            <div class="collapse show" id="readinglist-collapse" style="">
+            <div class="collapse" id="readinglist-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+
                     {% for readinglist in readinglists %}
-                        <li><a href="{% url 'detail_readinglist' readinglist.slug %}" class="rounded">{{ readinglist }}</a></li>
+                    <li><a href="{% url 'detail_readinglist' readinglist.slug %}" class="rounded">{{ readinglist }}</a>
+                    </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <button class="btn btn-toggle align-items-centerrounded collapsed" data-bs-toggle="collapse"
+                data-bs-target="#favorites-collapse" aria-expanded="false">
+                <span class="fas fa-star"></span>
+                Избранное
+            </button>
+            <div class="collapse" id="favorites-collapse" style="">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    {% for favorite in favorites %}
+                    <li><a href="#" class="rounded">{{ favorite }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-centerrounded" data-bs-toggle="collapse" data-bs-target="#favorites-collapse" aria-expanded="true">
-                Избранное
-            </button>
-            <div class="collapse show" id="favorites-collapse" style="">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    {% for favorite in favorites %}
-                        <li><a href="#" class="rounded">{{ favorite }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <input class="form-control me-2 dataTables_filter" type="search" id="searchbox" placeholder="Поиск по таблице" aria-label="Search">
+            <span class="fas fa-search icon-dark"></span>
         </li>
-    <div class="dropdown border-top fixed-bottom"">
-        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-            data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-            <strong>Действие</strong>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-            <li><a class="dropdown-item" href="{% url 'add_book' %}">Добавить книгу</a></li>
-            <li><a class="dropdown-item" href="{% url 'add_category' %}">Добавить категорию</a></li>
-            <li><a class="dropdown-item" href="{% url 'add_subcategory' %}">Добавить подкатегорию</a></li>
-            <li><a class="dropdown-item" href="{% url 'add_readinglist' %}">Добавить список чтения</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Sign out</a></li>
-        </ul>
-    </div>
+        <div class="dropdown border-top fixed-bottom">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                <strong>Действие</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                <li><a class="dropdown-item" href="{% url 'add_book' %}">Добавить книгу</a></li>
+                <li><a class="dropdown-item" href="{% url 'add_category' %}">Добавить категорию</a></li>
+                <li><a class="dropdown-item" href="{% url 'add_subcategory' %}">Добавить подкатегорию</a></li>
+                <li><a class="dropdown-item" href="{% url 'add_readinglist' %}">Добавить список чтения</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div>
 </div>

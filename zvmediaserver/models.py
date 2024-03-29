@@ -5,6 +5,8 @@ import pathlib
 from django.urls import reverse
 from django.contrib.auth.models import User
 from zvmediaserver.const import *
+from simple_history import register
+from simple_history.models import HistoricalRecords
 from PyPDF2 import PdfFileReader
 from django.db import models
 from epub_conversion.utils import open_book, convert_epub_to_lines
@@ -15,11 +17,15 @@ def user_directory_path(instance, filename):
     return f'books/{instance.user.username}/{filename}'
 
 
+register(User)
 class UserProfileSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    book_verbose_type = models.BooleanField(verbose_name="Просмотрщик книг", choices=BOOK_VERBOSE_TYPE, default=True)
-    order_by = models.CharField(verbose_name="Поле для сортировки",max_length=200, blank=True,null=True)
-    is_reverse_order_by = models.BooleanField(verbose_name="Прямой или обратный порядок сортировки", blank=True, null=True)
+    book_verbose_type = models.BooleanField(
+        verbose_name="Просмотрщик книг", choices=BOOK_VERBOSE_TYPE, default=True)
+    order_by = models.CharField(
+        verbose_name="Поле для сортировки", max_length=200, blank=True, null=True)
+    is_reverse_order_by = models.BooleanField(
+        verbose_name="Прямой или обратный порядок сортировки", blank=True, null=True)
 
 
 class Book(models.Model):
@@ -51,7 +57,7 @@ class Book(models.Model):
     current_page = models.IntegerField(
         verbose_name="Текущая страница", null=True, blank=True, default=1)
     progress = models.DecimalField(
-        verbose_name="Прогресс",max_digits=5, decimal_places=2, null=True, blank=True)
+        verbose_name="Прогресс", max_digits=5, decimal_places=2, null=True, blank=True)
     # reading_list = models.ManyToManyField(
     #     "BookReadingList", verbose_name="Список чтения", related_name='book', blank=True)
     is_favorites = models.BooleanField(verbose_name="Избранное", default=False)
@@ -62,6 +68,7 @@ class Book(models.Model):
         verbose_name="Дата создания", auto_now_add=True)
     update_time = models.DateTimeField(
         verbose_name="Дата изменения", auto_now=True)
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ['-create_time']
@@ -82,9 +89,9 @@ class Book(models.Model):
         if not self.is_favorites:
             self.is_favorites = False
         if self.progress:
-             self.progress = Decimal(self.progress).quantize(Decimal("1.00"))
-             print(self.progress)
-             print(type(self.progress))
+            self.progress = Decimal(self.progress).quantize(Decimal("1.00"))
+            print(self.progress)
+            print(type(self.progress))
         # if self.time_spent:
         #     self.time_spent = round(self.time_spent, 1)
         super().save(*args, **kwargs)
@@ -103,6 +110,7 @@ class BookAuthor(models.Model):
         verbose_name="Дата создания", auto_now_add=True)
     update_time = models.DateTimeField(
         verbose_name="Дата изменения", auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -126,6 +134,7 @@ class BookCategory(models.Model):
         verbose_name="Дата создания", auto_now_add=True)
     update_time = models.DateTimeField(
         verbose_name="Дата изменения", auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -152,6 +161,7 @@ class BookSubcategory(models.Model):
         verbose_name="Дата создания", auto_now_add=True)
     update_time = models.DateTimeField(
         verbose_name="Дата изменения", auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -172,14 +182,15 @@ class BookReadingList(models.Model):
                             max_length=200, db_index=True)
     # position = models.IntegerField(verbose_name="Номер позиции в списке")
     books = models.ManyToManyField(Book, verbose_name="Книга", related_name="readinglists",
-                            max_length=200, db_index=True, blank=True, null=True)
-    books_ordering = models.ForeignKey("BookOrderingInReadingList",verbose_name="Порядок чтения",
-                            max_length=200, on_delete=models.CASCADE)
+                                   max_length=200, db_index=True, blank=True, null=True)
+    books_ordering = models.ForeignKey("BookOrderingInReadingList", verbose_name="Порядок чтения",
+                                       max_length=200, on_delete=models.CASCADE)
     slug = models.SlugField(verbose_name="Слаг", max_length=255, unique=True)
     create_time = models.DateTimeField(
         verbose_name="Дата создания", auto_now_add=True)
     update_time = models.DateTimeField(
         verbose_name="Дата изменения", auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -215,11 +226,12 @@ class BookOrderingInReadingList(models.Model):
     # reading_list = models.ForeignKey(BookReadingList, verbose_name="Список чтения",
     #                         max_length=200, db_index=True,on_delete=models.DO_NOTHING)
     book = models.ForeignKey(Book, verbose_name="Книга",
-                            max_length=200, db_index=True,on_delete=models.CASCADE, blank=True, null=True)
+                             max_length=200, db_index=True, on_delete=models.CASCADE, blank=True, null=True)
     create_time = models.DateTimeField(
         verbose_name="Дата создания", auto_now_add=True)
     update_time = models.DateTimeField(
         verbose_name="Дата изменения", auto_now=True)
+    history = HistoricalRecords()
 
     # def __str__(self):
     #     return self.name
@@ -233,7 +245,6 @@ class BookOrderingInReadingList(models.Model):
         return reverse('books', kwargs={"slug": self.slug})
 
 
-
 class BookTag(models.Model):
     user = models.ForeignKey(User, related_name='tags',
                              on_delete=models.CASCADE)
@@ -244,6 +255,7 @@ class BookTag(models.Model):
         verbose_name="Дата создания", auto_now_add=True)
     update_time = models.DateTimeField(
         verbose_name="Дата изменения", auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name

@@ -43,15 +43,37 @@ function changeFavotites(object) {
                         $(object).attr('slug', slug)
                         $(object).attr('favorites', is_favorites)
                         setFavoritesListener()
+                        showNotify("Добавлено в избранное", "success")
                     }
                 })
             }
         },
         error: function (response) {
             console.log(response.responseJSON.errors)
+            showNotify("Не добавлено в избранное", "error")
         }
     });
     return false;
+
+    function showNotify(notifyMessage, notifyClass) {
+        $.notify(notifyMessage, {
+            clickToHide: true,
+            autoHide: true,
+            autoHideDelay: 1000,
+            arrowShow: true,
+            arrowSize: 5,
+            position: 'bottom right',
+            elementPosition: 'bottom right',
+            globalPosition: 'bottom right',
+            style: 'bootstrap',
+            className: notifyClass,
+            showAnimation: 'slideDown',
+            showDuration: 200,
+            hideAnimation: 'slideUp',
+            hideDuration: 100,
+            gap: 2,
+        });
+    }
 }
 
 // function saveBook(){
@@ -83,5 +105,7 @@ function changeFavotites(object) {
 //     });
 //     return false;
 //   }
+
+
 
 $(document).ready(exec())

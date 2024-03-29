@@ -2,38 +2,41 @@
 
 <!DOCTYPE html>
 <html lang="ru">
-<!-- <html lang="ru" data-bs-theme="dark"> -->
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
+
     <link rel="icon" type="image/png" href="{% static 'icons/favicon.png' %}" />
-    <link href="{%static 'vendor/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link type="text/css" href="{% static 'vendor/@fortawesome/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
     <link type="text/css" href="{% static 'vendor/notyf/notyf.min.css' %}" rel="stylesheet">
+    <link type="text/css" href="{% static 'css/volt.css' %}" rel="stylesheet">
     <link type="text/css" href="{% static 'css/jquery-confirm.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+
     {% block stylesheets %}{% endblock stylesheets %}
+
 </head>
 
 <body>
-    {% comment %}{% block header %}{% include "./header.html" %}{% endblock header %}{% endcomment %}
+    {% block header %}{% include "./header.html" %}{% endblock header %}
+    {% include "./jinja2/books/sidebar.html" %}
     {% block content %}{% endblock content %}
     {% block footer %}{% endblock footer %}
+    
     {% include './jinja2/includes/scripts.html' %}
     {% block javascripts %}{% endblock javascripts %}
-    <script src="{%static 'vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/notify.min.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
-    <script>
-        // Auto detect theme param
-        // let prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        // let html = document.querySelector('html');
-        // html.classList.add(prefers);
-        // html.setAttribute('data-bs-theme', prefers);
-    </script>
+
 </body>
 
 </html>

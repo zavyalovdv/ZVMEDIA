@@ -5,11 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="google" content="notranslate">
-  <title>PDF.js viewer</title>
+  <title></title>
   {% load static %}
+  <link rel="icon" type="image/png" href="{% static 'icons/favicon.png' %}" />
   <link rel="resource" type="application/l10n" href="{% static 'js/pdf.js/web/locale/locale.json' %}">
   <script src="{% static 'js/pdf.js/build/pdf.mjs' %}" type="module"></script>
   <script src="{% static 'js/pdf.js/web/viewer.mjs' %}" type="module"></script>
+  <script src="{% static 'js/pdf.js/build/pdf.worker.mjs' %}" type="module"></script>
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <link rel="stylesheet" href="{% static 'js/pdf.js/web/viewer.css' %}">
 </head>
@@ -582,7 +584,7 @@
 
       function updateTime() {
         seconds++;
-        if (seconds % 60 == 0) {
+        if (seconds % 5 == 0) {
           fetch(timeupdateurl,
             {
               headers: {

@@ -1,7 +1,7 @@
 import os
 import json
-import datetime
-from django.core.files import File
+from datetime import datetime, timedelta, date
+from django.utils import timezone
 from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView
@@ -17,6 +17,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout
 from django.contrib import messages
 
+
+def get_last_week():
+    now = timezone.now()
+    last_week = now - timedelta(days=7)
+    return last_week
+
+def get_cuurent_datetime():
+    now = timezone.now()
+    return now
 
 
 class ShowBooks(LoginRequiredMixin, ListView):
@@ -35,7 +44,7 @@ class ShowBooks(LoginRequiredMixin, ListView):
         context['favorites'] = Book.objects.filter(
             user=self.request.user, is_favorites=True)
         context['tags'] = BookTag.objects.filter(user=self.request.user)
-        context['today'] = datetime.date.today()
+        context['today'] = date.today()
         return context
 
     def get_queryset(self):
@@ -122,6 +131,7 @@ def book_set_pdf(request, book_slug):
     }
     return JsonResponse(response)
 
+   
 
 @csrf_exempt
 def ajax_update_extradata_book(request, book_slug):
@@ -135,6 +145,7 @@ def ajax_update_extradata_book(request, book_slug):
         book.time_spent = current_time_spent + update_time_spent
         book.current_page = current_page
         book.progress = float(f"{progress:.2f}")
+        print(get_cuurent_datetime())
         if (book.progress == 100.00):
             book.status = "прочитана"
         try:

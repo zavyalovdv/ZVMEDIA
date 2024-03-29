@@ -4518,7 +4518,8 @@ const defaultOptions = {
     kind: OptionKind.WORKER
   },
   workerSrc: {
-    value: "../build/pdf.worker.mjs",
+    // value: "../build/pdf.worker.mjs",
+    value: "/static/js/pdf.js/build/pdf.worker.mjs",
     kind: OptionKind.WORKER
   }
 };

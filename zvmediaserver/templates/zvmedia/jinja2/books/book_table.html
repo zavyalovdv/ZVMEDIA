@@ -1,138 +1,235 @@
 {% block 'booklist' %}
 {%load static%}
-<table class="book-list text-center" id="books-table">
-    <thead class="book-head">
-        <th>Название</th>
-        <th>Автор</th>
-        <th>Категория</th>
-        <th>Подкатегория</th>
-        <th>Статус</th>
-        <th>Слов</th>
-        <th>Страниц</th>
-        <th>Текущая страница</th>
-        <th>Часов на чтение</th>
-        <th>Часов затрачено</th>
-        <th>Прогресс</th>
-        <th>Прочитать к</th>
-        <th>Осталось времени</th>
-        <th>Избранное</th>
-        <th>Действия</th>
-    </thead>
-    <tbody class="book-body">
-        {% for book in books %}
-        <tr>
-            <td><a href="{% url 'browser_detail_book' book.slug %}">{{ book.name }}</a></td>
-            <td>
-                {% for author in book.author.all %}
-                <a href="{% url 'books_author' author.slug %}">{{author.name}}</a>
-                {% endfor %}
-            </td>
-            <td><a href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>
-            <td>
-                {% for subcategory in book.subcategory.all %}
-                <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}}</a>
-                {% endfor %}
-            </td>
-            <td>
-                {{book.status}}
-            </td>
-            <td>
-                {{book.words_count}}
-            </td>
-            <td>
-                {{book.pages_count}}
-            </td>
-            <td>
-                {% if book.current_page == 1 %}
-                -
-                {% else %}
-                {{book.current_page}}
-                {%endif%}
-
-            </td>
-            <td>
-                {{book.time_to_read}}
-            </td>
-            <td>
-                {% if book.time_spent == 0.0 %}
-                    0
-                {% else %}
-                    {{ book.time_spent|floatformat }}
-                {%endif%}
-            </td>
-            <td>
-                {% if book.progress == None %}
-                    0.0 %
-                {% else %}
-                {{ book.progress |floatformat }} %
-                {% endif %}
-            </td>
-            <td>
-                {% if book.target_date == None %}
-                    -
-                {% else %}
-                    {{ book.target_date }}
-                {% endif %}
-            </td>
-            <td>
-                {% if book.target_date == None %}
-                    -
-                {% else %}
-                    {{ today |timesince:book.target_date }}
-                {% endif %}
-            </td>
-            <td>
-                {% if book.is_favorites == False %}
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star"
-                    slug="{{ book.slug }}" favorites="{{ book.is_favorites }}" viewBox="0 0 16 16">
-                    <path
-                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                </svg>
-                {% else %}
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-star-fill" slug="{{ book.slug }}" favorites="{{ book.is_favorites }}"
-                    viewBox="0 0 16 16">
-                    <path
-                        d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                </svg>
-                {% endif %}
-            </td>
-            <td>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary">
-                        <a href="{% url 'pdf_init_book' book.slug %}">Читать</a>
-                    </button>
-                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden">Переключатель выпадающего списка</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <!-- <a onclick="addReadingList()" href="#">Добавить в список</a> -->
-                        <a href="{% url 'edit_book' book.slug %}">Редактировать</a>
-                        <a onclick="removeBook()" href="{% url 'remove_book' book.slug %}">Удалить</a>
-                    </ul>
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
 <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
-<script src="{% static 'js/jquery.min.js' %}"></script>
-<script src="{% static 'js/datatables.min.js' %}"></script>
-<script>
-    
-    new DataTable('#books-table');
-    // function addReadingList(){
-    //     let readinglistsJS = "{{ readinglists_json }}"
-    //     console.log(readinglistsJS)
-    //     console.log(typeof(readinglistsJS))
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+<div class="card border-light shadow-sm mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table
+                class="table table-centered table rounded compact rows-border display nowrap"
+                id="books-table" style="width:100%">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="dt-head-center">Название</th>
+                        <th class="dt-head-center">Автор</th>
+                        <th class="dt-head-center">Категория</th>
+                        <th class="dt-head-center">Подкатегория</th>
+                        <th class="dt-head-center">Статус</th>
+                        <th class="dt-head-center">Слов</th>
+                        <th class="dt-head-center">Страниц</th>
+                        <th class="dt-head-center">Текущая страница</th>
+                        <th class="dt-head-center">Часов на чтение</th>
+                        <th class="dt-head-center">Часов затрачено</th>
+                        <th class="dt-head-center">Прогресс</th>
+                        <th class="dt-head-center">Прочитать к</th>
+                        <th class="dt-head-center">Осталось времени</th>
+                        <th class="dt-head-center">Избранное</th>
+                        <th class="dt-head-center">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr class="dt-head-center">
+                        <td class="dt-head-center"><a href="{% url 'browser_detail_book' book.slug %}">{{ book.name }}</a></td>
+                        <td class="dt-head-center">
+                            {% for author in book.author.all %}
+                            <a href="{% url 'books_author' author.slug %}">{{author.name}}</a>
+                            {% endfor %}
+                        </td>
+                        <td class="dt-head-center"><a
+                                href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>
+                        <td>
+                            {% for subcategory in book.subcategory.all %}
+                            <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}}</a>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{book.status}}
+                        </td>
+                        <td>
+                            {{book.words_count}}
+                        </td>
+                        <td>
+                            {{book.pages_count}}
+                        </td>
+                        <td>
+                            {% if book.current_page == 1 %}
+                            -
+                            {% else %}
+                            {{book.current_page}}
+                            {%endif%}
 
+                        </td>
+                        <td>
+                            {{book.time_to_read}}
+                        </td>
+                        <td>
+                            {% if book.time_spent == 0.0 %}
+                            0
+                            {% else %}
+                            {{ book.time_spent|floatformat }}
+                            {%endif%}
+                        </td>
+                        <td>
+                            <div class="row d-flex align-items-center">
+                                {% if book.progress == None %}
+                                <div class="col-12 col-xl-2 px-0">
+                                    <div class="small font-weight-bold">0%</div>
+                                </div>
+                                <div class="col-12 col-xl-10 px-0 px-xl-1">
+                                    <div class="progress progress-lg mb-0">
+                                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="1"
+                                            aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="col-12 col-xl-10 px-0 px-xl-1">
+                                    <div class="progress progress-lg mb-0">
+                                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="1"
+                                            aria-valuemin="0" aria-valuemax="100"
+                                            style="width: {{ book.progress |floatformat:'0' }}%;"></div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                        </td>
+                        <td>
+                            {% if book.target_date == None %}
+                            -
+                            {% else %}
+                            {{ book.target_date }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if book.target_date == None %}
+                            -
+                            {% else %}
+                            {{ today |timesince:book.target_date }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if book.is_favorites == False %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-star" slug="{{ book.slug }}" favorites="{{ book.is_favorites }}"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                            </svg>
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-star-fill" slug="{{ book.slug }}" favorites="{{ book.is_favorites }}"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                            </svg>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button"
+                                    class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="icon icon-sm">
+                                        <span class="fas fa-ellipsis-h icon-dark"></span>
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <a class="text-primary" onclick="" href="{% url 'pdf_init_book' book.slug %}"><span
+                                            class="fas fa-glasses mr-10"></span>Читать</a><br>
+                                    <button onclick="" id="btn" class="button">
+                                        Data
+                                    </button><br>
+                                    <a class="text-secondary" href="{% url 'edit_book' book.slug %}"><span
+                                            class="fas fa-edit mr-5"></span>Редактировать</a><br>
+                                    <a class="text-danger delete_item" onclick="removeBook()"
+                                        href="{% url 'remove_book' book.slug %}"><span
+                                            class="fas fa-trash-alt mr-5"></span>Удалить</a>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- <div>
+    <canvas class="myChart" id="myChart okCanvas2" width="400" height="100">
+        <p>Hello Fallback World</p>
+    </canvas>
+</div> -->
+
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/notify.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<!-- <script src="{% static 'js/chart.min.js' %}"></script> -->
+<!-- Cell editor plugin for DataTables -->
+<!-- <script src="{% static 'js/dataTables.cellEdit.js' %}"></script> -->
+
+<script>
+    let table = $('#books-table').DataTable({
+        paging: false,
+        select: true,
+        scrollY: 400,
+        searching: true,
+        dom: 't',
+        fixedHeader: true,
+        columnDefs: [
+            {
+                targets: '*',
+                className: 'dt-body-center'
+            }]
+
+    });
+
+    $('#searchbox').on('keyup click', function () {
+        table.search($('#searchbox').val()).draw();
+    });
+
+    $("#searchbox").keyup(function () {
+        table.fnFilter(this.value);
+    });
+
+    function renderChart() {
+        const ctx = document.getElementById('myChart');
+        console.log(ctx)
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("btn");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function () {
+        renderChart();
+    }
+
+    // Cell editor plugin for DataTables
+    // function myCallbackFunction (updatedCell, updatedRow, oldValue) {
+    //     console.log("The new value for the cell is: " + updatedCell.data());
+    //     console.log("The values for each cell in that row are: " + updatedRow.data());
     // }
 
-    function removeBook() {
-        console.log(this)
-    }
+    // table.MakeCellsEditable({
+    //     "onUpdate": myCallbackFunction
+    // });
 </script>
 {% endblock %}
