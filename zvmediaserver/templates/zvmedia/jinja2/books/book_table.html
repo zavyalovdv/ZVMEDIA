@@ -1,13 +1,11 @@
 {% block 'booklist' %}
 {%load static%}
 <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
 <div class="card border-light shadow-sm mb-4">
     <div class="card-body">
         <div class="table-responsive">
-            <table
-                class="table table-centered table rounded compact rows-border display nowrap"
-                id="books-table" style="width:100%">
+            <table class="table table-centered table rounded compact rows-border display nowrap" id="books-table"
+                style="width:100%">
                 <thead class="thead-light">
                     <tr>
                         <th class="dt-head-center">Название</th>
@@ -39,8 +37,17 @@
                         <td class="dt-head-center"><a
                                 href="{% url 'books_category' book.category.slug %}">{{book.category}}</a></td>
                         <td>
+                            
                             {% for subcategory in book.subcategory.all %}
-                            <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}}</a>
+                                {% if book.subcategory.all.count > 1 %}
+                                    {% if not forloop.counter > 1 %}
+                                        <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}},</a>
+                                    {% else %}
+                                        <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}}</a>
+                                    {% endif %}
+                                {% else %}
+                                <a href="{% url 'books_subcategory' subcategory.slug %}">{{subcategory.name}}</a>
+                                {% endif %}
                             {% endfor %}
                         </td>
                         <td>
@@ -71,11 +78,9 @@
                             {%endif%}
                         </td>
                         <td>
+                            <div style="display: none;">{{ book.progress }}</div>
                             <div class="row d-flex align-items-center">
                                 {% if book.progress == None %}
-                                <div class="col-12 col-xl-2 px-0">
-                                    <div class="small font-weight-bold">0%</div>
-                                </div>
                                 <div class="col-12 col-xl-10 px-0 px-xl-1">
                                     <div class="progress progress-lg mb-0">
                                         <div class="progress-bar bg-success" role="progressbar" aria-valuenow="1"
@@ -100,11 +105,16 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if book.target_date == None %}
-                            -
+                            {% if book.status == "прочитана" %}
+                                прочитана
                             {% else %}
-                            {{ today |timesince:book.target_date }}
+                                {% if book.target_date == None %}
+                                -
+                                {% else %}
+                                {{ today |timesince:book.target_date }}
+                                {% endif %}
                             {% endif %}
+ 
                         </td>
                         <td>
                             {% if book.is_favorites == False %}
@@ -135,9 +145,9 @@
                                 <ul class="dropdown-menu">
                                     <a class="text-primary" onclick="" href="{% url 'pdf_init_book' book.slug %}"><span
                                             class="fas fa-glasses mr-10"></span>Читать</a><br>
-                                    <button onclick="" id="btn" class="button">
+                                    <!-- <button onclick="renderChart()" id="btn" class="button">
                                         Data
-                                    </button><br>
+                                    </button><br> -->
                                     <a class="text-secondary" href="{% url 'edit_book' book.slug %}"><span
                                             class="fas fa-edit mr-5"></span>Редактировать</a><br>
                                     <a class="text-danger delete_item" onclick="removeBook()"
@@ -188,39 +198,33 @@
         table.search($('#searchbox').val()).draw();
     });
 
-    $("#searchbox").keyup(function () {
-        table.fnFilter(this.value);
-    });
+    // $("#searchbox").keyup(function () {
+    //     table.fnFilter(this.value);
+    // });
 
-    function renderChart() {
-        const ctx = document.getElementById('myChart');
-        console.log(ctx)
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-    var modal = document.getElementById("myModal");
-    var btn = document.getElementById("btn");
-    var span = document.getElementsByClassName("close")[0];
 
-    btn.onclick = function () {
-        renderChart();
-    }
+    // function renderChart() {
+    //     const ctx = document.getElementById('myChart');
+    //     console.log(ctx)
+    //     new Chart(ctx, {
+    //         type: 'bar',
+    //         data: {
+    //             labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    //             datasets: [{
+    //                 label: '# of Votes',
+    //                 data: [12, 19, 3, 5, 2, 3],
+    //                 borderWidth: 1
+    //             }]
+    //         },
+    //         options: {
+    //             scales: {
+    //                 y: {
+    //                     beginAtZero: true
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
 
     // Cell editor plugin for DataTables
     // function myCallbackFunction (updatedCell, updatedRow, oldValue) {

@@ -22,6 +22,7 @@ urlpatterns = [
     path('books/newauthor/', views.CreateBookAuthor.as_view(), name="add_author"),
     path('books/newreadinglist/', views.CreateBookReadingList.as_view(), name="add_readinglist"),
     path('books/readinglist/<slug:readinglist_slug>/', views.DetailBookReadingList.as_view(), name="detail_readinglist"),
+    path('books/activity/', views.get_activity, name="activity"),
     path('books/changefavorite/', views.book_change_favorite, name="change_favorite"),
     path('books/', views.ShowBooks.as_view(),name="books"),
     path('login/', views.userlogin,name="login"),

@@ -284,6 +284,10 @@
             data-l10n-id="pdfjs-document-properties-button" aria-controls="documentPropertiesDialog">
             <span data-l10n-id="pdfjs-document-properties-button-label">Document Properties…</span>
           </button>
+          <button id="exit" class="secondaryToolbarButton" title="Exit" tabindex="70"
+            data-l10n-id="pdfjs-Exit-file-button">
+            <a href="{% url 'books' %}"><span data-l10n-id="pdfjs-Exit-file-button-label">Выход</span></a>
+          </button>
         </div>
       </div> <!-- secondaryToolbar -->
 
@@ -584,7 +588,7 @@
 
       function updateTime() {
         seconds++;
-        if (seconds % 5 == 0) {
+        if (seconds % 60 == 0) {
           fetch(timeupdateurl,
             {
               headers: {

@@ -23,6 +23,7 @@ def get_last_week():
     last_week = now - timedelta(days=7)
     return last_week
 
+
 def get_cuurent_datetime():
     now = timezone.now()
     return now
@@ -131,7 +132,6 @@ def book_set_pdf(request, book_slug):
     }
     return JsonResponse(response)
 
-   
 
 @csrf_exempt
 def ajax_update_extradata_book(request, book_slug):
@@ -365,7 +365,7 @@ class DetailBookReadingList(LoginRequiredMixin, DetailView):
     model = BookReadingList
     context_object_name = "readinglist"
     template_name = 'zvmedia/jinja2/books/detail_readinglist.html'
-    
+
     def get_object(self, queryset=None):
         return BookReadingList.objects.get(user=self.request.user, slug=self.kwargs['readinglist_slug'])
 
@@ -384,8 +384,8 @@ class DetailBookReadingList(LoginRequiredMixin, DetailView):
         # context['book_sequence'] = BookOrderingInReadingList.objects.filter(
         #     user=self.request.user,reading_list__slug=self.kwargs['readinglist_slug']).order_by('position')
         return context
-    
-    
+
+
 def index(request):
     return render(request, "zvmedia/index.html")
 
@@ -432,9 +432,91 @@ def get_categories(request):
             user=request.user)
         response = {}
         count = 0
-        print(categories)
         for category in categories:
-            print(category)
             response[count] = [category.pk, category.name]
             count += 1
     return JsonResponse(response)
+
+
+def get_activity(request):
+    if request.method == "GET":
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=6)
+        visited = []
+        datasets = []
+        labels = []
+        values = []
+        # datasets['dates'] = []
+        # datasets['labels'] = []
+        # datasets['names'] = []
+        user = request.user
+        books = Book.objects.filter(user=user)
+        for book in books:
+            # data = []
+            object = {}            
+            object["label"] = book.name
+            object["values"] = []
+            try:
+                book_history = book.history.filter(history_date__gte=start_date)
+                book_history_last = book_history.first()
+                book_history_first = book_history.last()
+                value = book_history_last.time_spent - book_history_first.time_spent
+                object['values'].append(value)
+            except:
+                object['values'].append(0.0)
+                object['values'].append(0.0)
+                    
+            # data.append(object)
+            datasets.append(object)
+            labels.append(book.name)
+            
+                       
+        context = {"dataset": datasets,"labels": labels}
+        print(context)
+        # print(labels)
+    return render(request, "zvmedia/jinja2/books/last_activity.html", context=context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def get_activity(request):
+#     if request.method == "GET":
+#         now = timezone.now()
+#         delta7days = now - timedelta(days=6)
+#         json_response = {}
+#         json_response["books"] = []
+#         json_response["dates"] = []
+#         json_response["data"] = []
+#         count = 0
+#         user = request.user
+       
+#         for day in range(7):
+#             date = delta7days + timedelta(days=day)
+#             books_histories = Book.history.as_of(date)
+#             date_str = f"{date.day}.{date.month}.{date.year}"
+#             json_response["dates"].append(date_str)
+#             for book_history in books_histories:
+#                 if not book_history.name in json_response["books"]:
+#                     json_response["books"].append(book_history.name)
+#                 json_response["data"].append({
+#                     "name": book_history.name,
+#                     "date": date_str,
+#                     "value": book_history.time_spent,
+#                 })
+#         context = {"dataset": json_response}
+#         print(context)
+#     return render(request, "zvmedia/jinja2/books/last_activity.html", context=context)

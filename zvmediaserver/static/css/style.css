@@ -209,11 +209,15 @@ th {
   display: none;
 }
 
-.modal {
+canvas{
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
   border: 1px solid black;
-  display: none;
-}
-
+  max-width: calc(100vw - 300px);
+  max-height: calc(100vh - 100px);
+  }
 .dataTables_filter {
   position: relative;
 }

@@ -42,8 +42,13 @@ function changeFavotites(object) {
                         object = newobject
                         $(object).attr('slug', slug)
                         $(object).attr('favorites', is_favorites)
+                        console.log(currentStatus)
                         setFavoritesListener()
-                        showNotify("Добавлено в избранное", "success")
+                        if (currentStatus == "True") {
+                            showNotify("Удалено из избранного", "error")
+                        } else {
+                            showNotify("Добавлено в избранное", "success")
+                        }
                     }
                 })
             }
