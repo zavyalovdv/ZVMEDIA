@@ -1,35 +1,51 @@
 {% extends 'zvmedia/index.html' %}
 
 {% block content %}
-<div class="content">
-    <h2>Новая книга</h2>
+<div class="col-2 center mx-auto text-center content-book-list">
+    <p><h2>Новая книга</h2></p>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="name">Название </label>
-        <input id="name" type="text" name="name" value="{{ object.name }}" class="form-control">
-        <label for="name">Автор</label>
+        <div class="mb-3">
+            <label for="name" class="form-label">Название </label>
+            <input id="name" type="text" name="name" value="{{ object.name }}" class="form-control">
+        </div>
+        <div class="mb-3">
+        <label for="name" class="form-label">Автор</label>
         <input id="author" type="text" name="author" value="" class="form-control">
-        <label for="file">Файл</label>
+        </div>
+        <div class="mb-3">
+        <label for="file" class="form-label">Файл</label>
         <input id="file" type="file" name="file" value="{{ object.file.filename }}" class="form-control">
-        <label for="name">Категория </label>
-        <select name="category" class="form-control select-category" required="" id="id_category">
+        </div>
+        <div class="mb-3">
+        <label for="name" class="form-label">Категория </label>
+        <select name="category" class="form-control select-category form-control" required="" id="id_category">
             {% for category in categories.all %}
             <option slug="{{category.slug}}" class="categories" value="{{ category.pk }}">{{ category }}</option>
             {% endfor %}
         </select>
-        <label for="name">Подкатегория </label>
+        </div>
+        <div class="mb-3">
+        <label for="name" class="form-label">Подкатегория </label>
         <select name="subcategory" class="form-control" required="" id="id_subcategory" multiple=""></select>
-        <label for="target_date">Прочитать до</label>
+        </div>
+        <div class="mb-3">
+        <label for="target_date" class="form-label">Прочитать до</label>
         <input id="target_date" type="date" name="target_date" value="" class="form-control">
+        </div>
+        <div class="mb-3">
         {% if reading_list %}
-        <label for="name">Список чтения </label>
+        <label for="name" class="form-label">Список чтения </label>
         <select name="reading_list" class="form-control select-reading_list" id="id_reading_list">
             {% for reading_list in reading_list.all %}
             <option slug="{{reading_list.slug}}" class="reading_list" value="{{ reading_list.pk }}">{{ reading_list }}</option>
             {% endfor %}
         </select>
         {% endif %}
-        <input type="submit" value="Submit" class="form-control">
+    </div>
+        <div class="mb-3">    
+        <input type="submit" value="Добавить" class="form-control">
+    </div>
         {{ field.errors }}
     </form>
 </div>

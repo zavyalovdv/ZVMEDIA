@@ -2,7 +2,6 @@
 
 <!DOCTYPE html>
 <html lang="ru">
-<!-- <html lang="ru" data-bs-theme="dark"> -->
 
 <head>
     <meta charset="UTF-8">
@@ -18,22 +17,19 @@
 </head>
 
 <body>
-    {% comment %}{% block header %}{% include "./header.html" %}{% endblock header %}{% endcomment %}
-    {% block content %}{% endblock content %}
-    {% block footer %}{% endblock footer %}
+    <div class="container-fluid">
+        <div class="row flex-nowrap"> 
+            {% include './jinja2/books/sidebar.html' %}
+            {% block content %}{% endblock content %}
+            {% block footer %}{% endblock footer %}
+        </div>
+    </div>
     {% include './jinja2/includes/scripts.html' %}
     {% block javascripts %}{% endblock javascripts %}
     <script src="{%static 'vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/notify.min.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
-    <script>
-        // Auto detect theme param
-        // let prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        // let html = document.querySelector('html');
-        // html.classList.add(prefers);
-        // html.setAttribute('data-bs-theme', prefers);
-    </script>
 </body>
 
 </html>
