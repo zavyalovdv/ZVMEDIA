@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html dir="ltr" mozdisallowselectionprint>
+
+{% comment %} <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="google" content="notranslate">
+  <title></title>
+  <link rel="icon" type="image/png" href="{% static 'icons/favicon.png' %}" />
+  {% comment %} <link rel="resource" type="application/l10n" href="{% static 'js/pdf.js/web/locale/locale.json' %}">
+  <script src="{% static 'js/pdf.js/build/pdf.mjs' %}" type="module"></script>
+  <script src="{% static 'js/pdf.js/web/viewer.mjs' %}" type="module"></script>
+  <script src="{% static 'js/pdf.js/build/pdf.worker.mjs' %}" type="module"></script>
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'js/pdf.js/web/viewer.css' %}">
+</head>
+{% endcomment %}
+
+<style>
+  a {
+    overflow: hidden;
+  }
+
+  a:visited {
+    text-decoration: none;
+    color: white;
+  }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Чтение: {{ book.title }}</title>
+    <link rel="icon" type="image/png" href="{% static 'icons/favicon.png' %}" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Убираем двойную прокрутку */
+        }
+        #reader-frame {
+            width: 100%;
+            height: 100vh; /* Растягиваем на всю высоту экрана */
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <iframe 
+        id="reader-frame"
+        src="{% static 'js/pdf.js/web/viewer.html' %}?file={{ pdf_url|urlencode }}" 
+        allowfullscreen 
+        webkitallowfullscreen>
+    </iframe>
+      <script>
+    function exec() {
+      const slug = ((document.baseURI).split("=")[1]).split("/")[3]
+      const uploadurl = '/books/setpdf/' + slug
+      const timeupdateurl = '/books/extradataupdate/' + slug
+      let seconds = 0;
+      let interval;
+
+      interval = setInterval(updateTime, 1000);
+
+      function updateTime() {
+        seconds++;
+        if (seconds % 10 == 0) {
+          fetch(timeupdateurl,
+            {
+              headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+              },
+              method: "POST",
+              body: JSON.stringify({ "seconds": seconds, "current_page": PDFViewerApplication.page }),
+            })
+            .then(response => console.log(response), seconds = 0)
+            .catch(err => alert(err));
+        }
+      }
+      const currentPage = PDFViewerApplication._currentPage
+      console.log(currentPage)
+      console.log("Init()")
+      uploadButton = document.getElementById('secondarySaveFile')
+      uploadButton.addEventListener('click', () => {
+        uploadBook()
+      })
+
+      async function uploadBook() {
+        if (PDFViewerApplication._saveInProgress) {
+          return;
+        }
+        PDFViewerApplication.pdfScriptingManager.dispatchWillSave();
+        const filename = PDFViewerApplication._docFilename
+        PDFViewerApplication._ensureDownloadComplete();
+        const doc = await PDFViewerApplication.pdfDocument.saveDocument();
+        var file = new FormData()
+        const blob = new Blob([doc], {
+          type: "application/pdf"
+        });
+        file.append('book', blob)
+
+        fetch(uploadurl,
+          {
+            method: "POST",
+            body: file,
+          })
+          .then(response => alert('Book uploaded'), PDFViewerApplication._saveInProgress = false)
+          .catch(err => alert(err));
+      }
+    }
+
+    $(document).ready(setTimeout(() => {
+      exec()
+    }, 5000))
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{% extends 'zvmedia/index.html' %}
+{% block title %}Новый список чтения{% endblock %}
+{% block content %}
+<div class="form-page">
+    <div class="form-card">
+        <h2>Список <em>чтения</em></h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mb-3" style="margin-top: 28px;">
+                <input type="submit" value="Создать список" class="form-control">
+            </div>
+            {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

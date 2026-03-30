@@ -1,0 +1,17 @@
+{% extends 'booklibrary/index.html' %}
+{% block title %}Добавить подкатегорию{% endblock %}
+{% block content %}
+<div class="form-page">
+    <div class="form-card">
+        <h2>Новая <em>подкатегория</em></h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mb-3" style="margin-top: 28px;">
+                <input type="submit" value="Добавить подкатегорию" class="form-control">
+            </div>
+            {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

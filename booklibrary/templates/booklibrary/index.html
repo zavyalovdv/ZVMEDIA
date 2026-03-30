@@ -1,0 +1,75 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ZVMediaServer{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'booklibrary/icons/favicon.png' %}" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link href="{% static 'booklibrary/vendor/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link type="text/css" href="{% static 'booklibrary/vendor/@fortawesome/fontawesome-free/css/all.min.css' %}"
+        rel="stylesheet">
+    <link type="text/css" href="{% static 'booklibrary/vendor/notyf/notyf.min.css' %}" rel="stylesheet">
+    <link type="text/css" href="{% static 'booklibrary/css/jquery-confirm.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'booklibrary/css/style.css' %}">
+    {% block stylesheets %}{% endblock stylesheets %}
+</head>
+
+<body>
+
+    <!-- ── Top Navigation Bar ── -->
+    <nav class="topbar">
+        <div class="topbar-brand"><span>://</span>ZVMEDIASERVER</div>
+        <ul class="topbar-nav">
+            <li><a href="{% url 'books' %}"
+                    class="{% if request.resolver_match.url_name == 'books' %}active{% endif %}">
+                    <i class="fas fa-book-open" style="margin-right:5px; font-size:11px;"></i> Библиотека
+                </a></li>
+            <li><a href="#">
+                    <i class="fas fa-film" style="margin-right:5px; font-size:11px;"></i> Кинотеатр
+                </a></li>
+            <li><a href="#">
+                    <i class="fas fa-music" style="margin-right:5px; font-size:11px;"></i> Музыка
+                </a></li>
+            <li><a href="#">
+                    <i class="fas fa-images" style="margin-right:5px; font-size:11px;"></i> Галерея
+                </a></li>
+        </ul>
+        <div class="topbar-search">
+            <i class="fas fa-search search-icon"></i>
+            <input type="search" id="searchbox" placeholder="Поиск по библиотеке…" aria-label="Search">
+        </div>
+        <div class="topbar-user">
+            {% if request.user.is_authenticated %}
+            <span style="font-size:12px; color: var(--text-3); font-family: var(--font-mono);">{{ user.username }}</span>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt" style="margin-right:5px;"></i>Выйти</a>
+            {% else %}
+            <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt" style="margin-right:5px;"></i>Войти</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- ── Layout ── -->
+    <div class="main-wrap">
+        {% include './sidebar.html' %}
+        <div class="main-content">
+            {% block content %}{% endblock content %}
+            {% block footer %}{% endblock footer %}
+        </div>
+    </div>
+
+    {% include './scripts.html' %}
+    {% block javascripts %}{% endblock javascripts %}
+
+    <script src="{% static 'booklibrary/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
+    <script src="{% static 'booklibrary/js/notify.min.js' %}"></script>
+    <script src="{% static 'booklibrary/js/script.js' %}"></script>
+</body>
+
+</html>

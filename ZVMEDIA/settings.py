@@ -40,11 +40,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_jinja",
-    "django_extensions",
-    "simple_history",
-    "zvmediaserver.apps.ZvmediaserverConfig",
-    "zvmediaserver.modules.services",
+    # "django_jinja",
+    # "django_extensions",
+    # "simple_history",
+    "booklibrary.apps.BooklibraryConfig",
 ]
 
 MIDDLEWARE = [
@@ -144,8 +143,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "staticdev",  # Путь к общей папке в корне
+]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "zvmediaserver/media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

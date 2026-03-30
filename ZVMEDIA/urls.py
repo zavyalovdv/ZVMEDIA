@@ -14,15 +14,23 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
-
-from zvmediaserver.views import page_not_found
+from django.conf.urls.static import static
+from ZVMEDIA import settings
+from booklibrary.views import page_not_found
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('zvmediaserver.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("booklibrary.urls")),
+    path("", include("musiclibrary.urls")),
+    path("", include("movielibrary.urls")),
+    path("", include("users.urls")),
 ]
 
-handler_404 = page_not_found 
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+handler_404 = page_not_found

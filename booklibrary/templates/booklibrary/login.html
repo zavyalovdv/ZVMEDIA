@@ -1,0 +1,76 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Войти — ZVMediaServer</title>
+    <link rel="icon" type="image/png" href="{% static 'booklibrary/icons/favicon.png' %}" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link href="{% static 'booklibrary/vendor/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link type="text/css" href="{% static 'booklibrary/vendor/@fortawesome/fontawesome-free/css/all.min.css' %}"
+        rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'booklibrary/css/style.css' %}">
+</head>
+
+<body>
+
+    <div class="login-page">
+        <div class="login-card">
+
+            <div class="login-logo"><span>://</span>ZVMEDIASERVER</div>
+
+            <h2>Добро<br><em>пожаловать</em></h2>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <input type="text" id="username" name="username" required placeholder=" ">
+                    <label for="username">Имя пользователя</label>
+                    <i class="fas fa-user"></i>
+                </div>
+                {% if form.username.errors %}
+                <div class="error">{{ form.username.errors }}</div>
+                {% endif %}
+
+                <div class="form-group">
+                    <input type="password" id="password" name="password" required placeholder=" ">
+                    <label for="password">Пароль</label>
+                    <i class="fas fa-lock"></i>
+                </div>
+                {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+                {% endif %}
+
+                <div style="margin-top: 28px;">
+                    <button type="submit"
+                        style="width:100%; padding:14px; background: var(--accent); color: #0e0f14; border: none; border-radius: 8px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.18s;">
+                        Войти в систему
+                    </button>
+                </div>
+            </form>
+
+            <div style="margin-top: 24px; text-align: center; font-size: 12px; color: var(--text-3);">
+                Медиасервер личной библиотеки
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+    <style>
+        button[type="submit"]:hover {
+            background: #d4b87e !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(200, 169, 110, 0.35);
+        }
+    </style>
+
+</body>
+
+</html>
