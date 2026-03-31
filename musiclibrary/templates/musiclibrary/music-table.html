@@ -1,7 +1,6 @@
 {% block 'music_table' %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'booklibrary/css/datatables.min.css' %}">
-
 <div class="data-tables vh-100">
 
     <!-- Toolbar -->
@@ -36,8 +35,14 @@
         </thead>
         <tbody>
             {% for track in tracks %}
-            <tr>
-                <td>{{ track.title }}</td>
+<td>
+    <button class="btn-play-track" 
+            data-url="{{ track.file.url }}" 
+            style="background:none; border:none; cursor:pointer; color: #007bff;">
+        <i class="fas fa-play"></i>
+    </button>
+    {{ track.title }}
+</td>
                 <td>{{ track.artist }}</td>
                 <td>{{ track.album }}</td>
                 <td>{{ track.genre }}</td>
@@ -46,13 +51,14 @@
                 <td>{{ track.file_name }}</td>
                 <td>{{ track.format }}</td>
                 <td></td>
-                <td></td>
+                <td>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
+<audio id="global-audio-player" style="display:none;"></audio>
 <script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
 <script src="{% static 'booklibrary/js/notify.min.js' %}"></script>
 <script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>
@@ -83,6 +89,43 @@
         autoWidth: false,
         order: [],
     });
+$('#music-table').on('click', '.btn-play-track', function(e) {
+    e.preventDefault(); // Предотвращаем стандартное поведение
 
+    // Берем URL напрямую из атрибута нажатой кнопки
+    const trackUrl = $(this).attr('data-url'); 
+    const icon = $(this).find('i');
+
+    console.log("Пытаемся воспроизвести:", trackUrl); // Для отладки в консоли F12
+
+    if (!trackUrl || trackUrl === "undefined") {
+        console.error("Ошибка: URL трека не найден!");
+        return;
+    }
+
+    const player = document.getElementById('global-audio-player');
+
+    // Если этот же трек уже играет — пауза
+    if (player.src.endsWith(trackUrl) && !player.paused) {
+        player.pause();
+        icon.removeClass('fa-pause').addClass('fa-play');
+        return;
+    }
+
+    // Если новый трек
+    if (!player.src.endsWith(trackUrl)) {
+        player.src = trackUrl;
+        
+        // Сбрасываем иконки у всех остальных кнопок
+        $('.btn-play-track i').removeClass('fa-pause').addClass('fa-play');
+    }
+
+    player.play().catch(error => {
+        console.error("Ошибка воспроизведения:", error);
+    });
+    
+    icon.removeClass('fa-play').addClass('fa-pause');
+    currentPlayingBtn = $(this);
+});
 </script>
 {% endblock %}
