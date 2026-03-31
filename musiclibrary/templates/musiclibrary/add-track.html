@@ -1,0 +1,79 @@
+{% extends 'index.html' %}
+
+{% block title %}Добавить книгу{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-card">
+        <h2>Новая <em>книга</em></h2>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label" for="file">Трек</label>
+                <input id="file" type="file" name="file" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="id_genre">Жанр</label>
+                <select name="genre" class="form-control select-genre" required id="id_genre">
+                    {% for genre in genres %}
+                        <option slug="{{ genre.slug }}" class="genres" value="{{ genre.pk }}">{{genre.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3" style="margin-top: 28px;">
+                <input type="submit" value="Добавить трек" class="form-control">
+            </div>
+
+            {% if field.errors %}
+            <div class="error">{{ field.errors }}</div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<script>
+    function exec() {
+        const current_user = "{{ user }}";
+        const selectCategory = document.querySelector('.select-category');
+        let slug = selectCategory.options[selectCategory.selectedIndex].getAttribute('slug');
+        selectCategory.addEventListener('change', () => {
+            slug = selectCategory.options[selectCategory.selectedIndex].getAttribute('slug');
+            getSubcategories(current_user, slug);
+        });
+        getSubcategories(current_user, slug);
+    }
+
+    function getSubcategories(current_user, slug) {
+        const uploadurl = "/books/getsubcategories/" + slug;
+        fetch(uploadurl, { method: "GET" })
+            .then(response => response.json())
+            .then(subcategories => setSubcategories(subcategories))
+            .catch(err => console.error(err));
+    }
+
+    function setSubcategories(subcategories) {
+        const select = document.getElementById('id_subcategory');
+        select.innerHTML = "";
+        const size = Object.keys(subcategories).length;
+        if (size === 0) {
+            const opt = document.createElement('option');
+            opt.value = 1;
+            opt.innerHTML = "Нет подкатегорий для этой категории";
+            select.appendChild(opt);
+            return;
+        }
+        for (let i = 0; i < size; i++) {
+            const opt = document.createElement('option');
+            opt.value = subcategories[i][0];
+            opt.innerHTML = subcategories[i][1];
+            select.appendChild(opt);
+        }
+    }
+
+    window.onload = exec();
+</script>
+{% endblock %}

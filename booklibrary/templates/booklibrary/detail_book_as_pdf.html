@@ -1,4 +1,5 @@
-<!DOCTYPE html> <head>
+<!DOCTYPE html>
+<head>
   <style>
   a {
     overflow: hidden;
@@ -10,28 +11,28 @@
   }
   </style>
   {% load static %}
-  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
 
   <script>
     window.pdfjsLib = {}; 
   </script>
 
   <script type="module">
-    import * as pdfjsLib from "{% static 'js/pdf.js/build/pdf.mjs' %}";
-    import { PDFViewerApplicationOptions } from "{% static 'js/pdf.js/web/viewer.mjs' %}";
+    import * as pdfjsLib from "{% static 'booklibrary/js/pdf.js/build/pdf.mjs' %}";
+    import { PDFViewerApplicationOptions } from "{% static 'booklibrary/js/pdf.js/web/viewer.mjs' %}";
 
     // Наполняем старую переменную новой библиотекой для твоих костылей
     window.pdfjsLib = pdfjsLib;
     
     // Прямой путь к воркеру, чтобы PDF.js не ломился в /books/build/
-    PDFViewerApplicationOptions.set('workerSrc', "{% static 'js/pdf.js/build/pdf.worker.mjs' %}");
+    PDFViewerApplicationOptions.set('workerSrc', "{% static 'booklibrary/js/pdf.js/build/pdf.worker.mjs' %}");
   </script>
 
-  <script src="{% static 'js/pdf.js/web/viewer.mjs' %}" type="module"></script>
+  <script src="{% static 'booklibrary/js/pdf.js/web/viewer.mjs' %}" type="module"></script>
   
-  <link rel="stylesheet" href="{% static 'js/pdf.js/web/viewer.css' %}">
-    <link rel="icon" type="image/png" href="{% static 'icons/favicon.png' %}" />
-  <link rel="resource" type="application/l10n" href="{% static 'js/pdf.js/web/locale/locale.json' %}">
+  <link rel="stylesheet" href="{% static 'booklibrary/js/pdf.js/web/viewer.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'booklibrary/icons/favicon.png' %}" />
+  <link rel="resource" type="application/l10n" href="{% static 'booklibrary/js/pdf.js/web/locale/locale.json' %}">
 </head>
 
   <body tabindex="0">
@@ -1211,97 +1212,92 @@
 
 
 <script>
-  function exec() {
-    // Твои переменные путей
-    const slug = ((document.baseURI).split("=")[1]).split("/")[3];
-    const uploadurl = '/books/setpdf/' + slug;
-    const timeupdateurl = '/books/extradataupdate/' + slug;
-    
-    let seconds = 0;
-    let interval = setInterval(updateTime, 1000);
+let slug, uploadurl, timeupdateurl;
+function initPaths() {
+    const pathParts = window.location.pathname.split('/');
+    slug = pathParts.filter(part => part !== "").pop(); 
+    uploadurl = '/books/setpdf/' + slug + '/'; 
+    timeupdateurl = '/books/extradataupdate/' + slug + '/';
+    console.log("Detected slug:", slug);
+    console.log("Upload URL:", uploadurl);
+}
 
-    function updateTime() {
-      seconds++;
-      if (seconds % 10 == 0) {
-        fetch(timeupdateurl, {
-          headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}' // На всякий случай для POST
-          },
-          method: "POST",
-          body: JSON.stringify({
-            "seconds": seconds,
-            "current_page": PDFViewerApplication.page
-          }),
-        })
-        .then(response => {
-          console.log("Time updated", response);
-          seconds = 0;
-        })
-        .catch(err => console.error("Update error:", err));
-      }
-    }
+async function uploadBook() {
+    try {
+        if (typeof uploadurl === 'undefined') initPaths();
 
-    console.log("Current Page:", PDFViewerApplication.page);
-    console.log("Init()");
-
-    // Кнопка выгрузки
-    const uploadButton = document.getElementById('secondarySaveFile');
-    if (uploadButton) {
-      uploadButton.addEventListener('click', () => {
-        uploadBook();
-      });
-    }
-
-    // Вложенная функция выгрузки
-    async function uploadBook() {
-      console.log("Начинаем выгрузку...");
-      try {
         if (!PDFViewerApplication.pdfDocument) {
-          alert("Документ еще не загружен");
-          return;
+            alert("Документ еще не загружен");
+            return;
         }
+        const urlParams = new URLSearchParams(window.location.search);
+        let fileName = urlParams.get('filename') || 
+                      PDFViewerApplication.contentDispositionFilename || 
+                      (slug + ".pdf");
 
         const data = await PDFViewerApplication.pdfDocument.saveDocument();
-        const file = new FormData();
         const blob = new Blob([data], { type: "application/pdf" });
         
-        file.append('book', blob, 'book.pdf');
+        const fileData = new FormData();
+        fileData.append('book', blob, fileName); 
 
         const response = await fetch(uploadurl, {
-          method: "POST",
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': '{{ csrf_token }}'
-          },
-          body: file,
+            method: "POST",
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: fileData,
         });
 
         if (response.ok) {
-          alert('Книга успешно выгружена!');
+            alert('Книга успешно сохранена!');
         } else {
-          alert('Ошибка сервера: ' + response.status);
+            alert('Ошибка при сохранении. Код: ' + response.status);
         }
-      } catch (err) {
-        console.error(err);
-        alert('Ошибка при сохранении: ' + err.message);
-      }
+    } catch (err) {
+        console.error("Upload error:", err);
+        alert('Ошибка: ' + err.message);
     }
-  } // Конец функции exec
+}
 
-  // Запуск после готовности документа
-  $(document).ready(function() {
-    setTimeout(() => {
-      // Проверяем, что PDF.js вообще загрузился
-      if (typeof PDFViewerApplication !== 'undefined') {
-        exec();
-      } else {
-        console.error("PDFViewerApplication не найден даже через 5 сек");
-      }
-    }, 5000);
-  });
+function exec() {
+    initPaths();
+    
+    let seconds = 0;
+    setInterval(() => {
+        seconds += 10;
+        fetch(timeupdateurl, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            method: "POST",
+            body: JSON.stringify({
+                "seconds": 10, // Отправляем дельту
+                "current_page": PDFViewerApplication.page
+            }),
+        })
+        .then(response => console.log("Progress synced"))
+        .catch(err => console.error("Sync error:", err));
+    }, 10000);
+
+    const uploadButton = document.getElementById('secondarySaveFile');
+    if (uploadButton) {
+        uploadButton.onclick = uploadBook;
+    }
+}
+
+$(document).ready(function() {
+    const checkPDFJS = setInterval(() => {
+        if (typeof PDFViewerApplication !== 'undefined' && PDFViewerApplication.initialized) {
+            clearInterval(checkPDFJS);
+            exec();
+        }
+    }, 500);
+});
+
 </script>
 </body>
 

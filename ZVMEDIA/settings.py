@@ -41,9 +41,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # "django_jinja",
-    # "django_extensions",
+    "django_extensions",
     # "simple_history",
+    "users.apps.UsersConfig",
     "booklibrary.apps.BooklibraryConfig",
+    "musiclibrary.apps.MusiclibraryConfig",
+    "movielibrary.apps.MovielibraryConfig",
 ]
 
 MIDDLEWARE = [
@@ -58,24 +61,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "ZVMEDIA.urls"
-
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.jinja2.Jinja2",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-    {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # ДОБАВЛЯЕМ ПУТЬ К ТВОЕЙ КОРНЕВОЙ ПАПКЕ TEMPLATES
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -147,6 +137,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "staticdev",  # Путь к общей папке в корне
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

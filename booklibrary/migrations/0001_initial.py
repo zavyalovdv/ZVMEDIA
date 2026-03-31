@@ -17,183 +17,694 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Author',
+            name="Author",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Имя')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(auto_now=True, verbose_name='Дата изменения')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='authors', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(db_index=True, max_length=200, verbose_name="Имя"),
+                ),
+                (
+                    "slug",
+                    models.SlugField(max_length=255, unique=True, verbose_name="Слаг"),
+                ),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(auto_now=True, verbose_name="Дата изменения"),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="authors",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Категория')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(auto_now=True, verbose_name='Дата изменения')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categories', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=200, verbose_name="Категория"
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(max_length=255, unique=True, verbose_name="Слаг"),
+                ),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(auto_now=True, verbose_name="Дата изменения"),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="categories",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='HistoricalAuthor',
+            name="HistoricalAuthor",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Имя')),
-                ('slug', models.SlugField(max_length=255, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата изменения')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(db_index=True, max_length=200, verbose_name="Имя"),
+                ),
+                ("slug", models.SlugField(max_length=255, verbose_name="Слаг")),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата изменения"
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical author',
-                'verbose_name_plural': 'historical authors',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical author",
+                "verbose_name_plural": "historical authors",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalBook',
+            name="HistoricalBook",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Название')),
-                ('file', models.TextField(max_length=100, verbose_name='Файл')),
-                ('status', models.CharField(choices=[('не читалась', 'не читалась'), ('в процессе', 'в процессе'), ('прочитана', 'прочитана')], default='не читалась', max_length=200, verbose_name='Статус')),
-                ('pages_count', models.IntegerField(blank=True, null=True, verbose_name='Количество страниц')),
-                ('words_count', models.IntegerField(blank=True, null=True, verbose_name='Количество слов')),
-                ('time_to_read', models.FloatField(blank=True, null=True, verbose_name='Часов на чтение')),
-                ('time_spent', models.FloatField(blank=True, default=0, null=True, verbose_name='Часов затрачено')),
-                ('target_date', models.DateField(blank=True, null=True, verbose_name='Прочитать к')),
-                ('time_left', models.DateField(blank=True, null=True, verbose_name='Прочитать к')),
-                ('current_page', models.IntegerField(blank=True, default=1, null=True, verbose_name='Текущая страница')),
-                ('progress', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='Прогресс')),
-                ('is_favorites', models.BooleanField(default=False, verbose_name='Избранное')),
-                ('slug', models.SlugField(max_length=255, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата изменения')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('category', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='booklibrary.category', verbose_name='Категория')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=200, verbose_name="Название"
+                    ),
+                ),
+                ("file", models.TextField(max_length=100, verbose_name="Файл")),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("не читалась", "не читалась"),
+                            ("в процессе", "в процессе"),
+                            ("прочитана", "прочитана"),
+                        ],
+                        default="не читалась",
+                        max_length=200,
+                        verbose_name="Статус",
+                    ),
+                ),
+                (
+                    "pages_count",
+                    models.IntegerField(
+                        blank=True, null=True, verbose_name="Количество страниц"
+                    ),
+                ),
+                (
+                    "words_count",
+                    models.IntegerField(
+                        blank=True, null=True, verbose_name="Количество слов"
+                    ),
+                ),
+                (
+                    "time_to_read",
+                    models.FloatField(
+                        blank=True, null=True, verbose_name="Часов на чтение"
+                    ),
+                ),
+                (
+                    "time_spent",
+                    models.FloatField(
+                        blank=True, default=0, null=True, verbose_name="Часов затрачено"
+                    ),
+                ),
+                (
+                    "target_date",
+                    models.DateField(blank=True, null=True, verbose_name="Прочитать к"),
+                ),
+                (
+                    "time_left",
+                    models.DateField(blank=True, null=True, verbose_name="Прочитать к"),
+                ),
+                (
+                    "current_page",
+                    models.IntegerField(
+                        blank=True,
+                        default=1,
+                        null=True,
+                        verbose_name="Текущая страница",
+                    ),
+                ),
+                (
+                    "progress",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=5,
+                        null=True,
+                        verbose_name="Прогресс",
+                    ),
+                ),
+                (
+                    "is_favorites",
+                    models.BooleanField(default=False, verbose_name="Избранное"),
+                ),
+                ("slug", models.SlugField(max_length=255, verbose_name="Слаг")),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата изменения"
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="booklibrary.category",
+                        verbose_name="Категория",
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical Книга',
-                'verbose_name_plural': 'historical Книги',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical Книга",
+                "verbose_name_plural": "historical Книги",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalCategory',
+            name="HistoricalCategory",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Категория')),
-                ('slug', models.SlugField(max_length=255, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата изменения')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=200, verbose_name="Категория"
+                    ),
+                ),
+                ("slug", models.SlugField(max_length=255, verbose_name="Слаг")),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата изменения"
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical category',
-                'verbose_name_plural': 'historical categorys',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical category",
+                "verbose_name_plural": "historical categorys",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalSubcategory',
+            name="HistoricalSubcategory",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Подкатегория')),
-                ('slug', models.SlugField(max_length=255, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(blank=True, editable=False, verbose_name='Дата изменения')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('category', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='booklibrary.category', verbose_name='Категория')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=200, verbose_name="Подкатегория"
+                    ),
+                ),
+                ("slug", models.SlugField(max_length=255, verbose_name="Слаг")),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Дата изменения"
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="booklibrary.category",
+                        verbose_name="Категория",
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical subcategory',
-                'verbose_name_plural': 'historical subcategorys',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical subcategory",
+                "verbose_name_plural": "historical subcategorys",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='Subcategory',
+            name="Subcategory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Подкатегория')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(auto_now=True, verbose_name='Дата изменения')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='booklibrary.category', verbose_name='Категория')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subcategories', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=200, verbose_name="Подкатегория"
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(max_length=255, unique=True, verbose_name="Слаг"),
+                ),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(auto_now=True, verbose_name="Дата изменения"),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="booklibrary.category",
+                        verbose_name="Категория",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="subcategories",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserProfileSettings',
+            name="UserProfileSettings",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('book_verbose_type', models.BooleanField(choices=[('стандартный', 'стандартный'), ('расширенный', 'расширенный')], default=True, verbose_name='Просмотрщик книг')),
-                ('order_by', models.CharField(blank=True, max_length=200, null=True, verbose_name='Поле для сортировки')),
-                ('is_reverse_order_by', models.BooleanField(blank=True, null=True, verbose_name='Прямой или обратный порядок сортировки')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "book_verbose_type",
+                    models.BooleanField(
+                        choices=[
+                            ("стандартный", "стандартный"),
+                            ("расширенный", "расширенный"),
+                        ],
+                        default=True,
+                        verbose_name="Просмотрщик книг",
+                    ),
+                ),
+                (
+                    "order_by",
+                    models.CharField(
+                        blank=True,
+                        max_length=200,
+                        null=True,
+                        verbose_name="Поле для сортировки",
+                    ),
+                ),
+                (
+                    "is_reverse_order_by",
+                    models.BooleanField(
+                        blank=True,
+                        null=True,
+                        verbose_name="Прямой или обратный порядок сортировки",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Book',
+            name="Book",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=200, verbose_name='Название')),
-                ('file', models.FileField(upload_to=booklibrary.models.user_directory_path, verbose_name='Файл')),
-                ('status', models.CharField(choices=[('не читалась', 'не читалась'), ('в процессе', 'в процессе'), ('прочитана', 'прочитана')], default='не читалась', max_length=200, verbose_name='Статус')),
-                ('pages_count', models.IntegerField(blank=True, null=True, verbose_name='Количество страниц')),
-                ('words_count', models.IntegerField(blank=True, null=True, verbose_name='Количество слов')),
-                ('time_to_read', models.FloatField(blank=True, null=True, verbose_name='Часов на чтение')),
-                ('time_spent', models.FloatField(blank=True, default=0, null=True, verbose_name='Часов затрачено')),
-                ('target_date', models.DateField(blank=True, null=True, verbose_name='Прочитать к')),
-                ('time_left', models.DateField(blank=True, null=True, verbose_name='Прочитать к')),
-                ('current_page', models.IntegerField(blank=True, default=1, null=True, verbose_name='Текущая страница')),
-                ('progress', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='Прогресс')),
-                ('is_favorites', models.BooleanField(default=False, verbose_name='Избранное')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='Слаг')),
-                ('create_time', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
-                ('update_time', models.DateTimeField(auto_now=True, verbose_name='Дата изменения')),
-                ('author', models.ManyToManyField(related_name='book', to='booklibrary.author', verbose_name='Автор')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='books', to=settings.AUTH_USER_MODEL)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='booklibrary.category', verbose_name='Категория')),
-                ('subcategory', models.ManyToManyField(related_name='book', to='booklibrary.subcategory', verbose_name='Подкатегория')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=200, verbose_name="Название"
+                    ),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        upload_to=booklibrary.models.get_user_directory_path,
+                        verbose_name="Файл",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("не читалась", "не читалась"),
+                            ("в процессе", "в процессе"),
+                            ("прочитана", "прочитана"),
+                        ],
+                        default="не читалась",
+                        max_length=200,
+                        verbose_name="Статус",
+                    ),
+                ),
+                (
+                    "pages_count",
+                    models.IntegerField(
+                        blank=True, null=True, verbose_name="Количество страниц"
+                    ),
+                ),
+                (
+                    "words_count",
+                    models.IntegerField(
+                        blank=True, null=True, verbose_name="Количество слов"
+                    ),
+                ),
+                (
+                    "time_to_read",
+                    models.FloatField(
+                        blank=True, null=True, verbose_name="Часов на чтение"
+                    ),
+                ),
+                (
+                    "time_spent",
+                    models.FloatField(
+                        blank=True, default=0, null=True, verbose_name="Часов затрачено"
+                    ),
+                ),
+                (
+                    "target_date",
+                    models.DateField(blank=True, null=True, verbose_name="Прочитать к"),
+                ),
+                (
+                    "time_left",
+                    models.DateField(blank=True, null=True, verbose_name="Прочитать к"),
+                ),
+                (
+                    "current_page",
+                    models.IntegerField(
+                        blank=True,
+                        default=1,
+                        null=True,
+                        verbose_name="Текущая страница",
+                    ),
+                ),
+                (
+                    "progress",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=5,
+                        null=True,
+                        verbose_name="Прогресс",
+                    ),
+                ),
+                (
+                    "is_favorites",
+                    models.BooleanField(default=False, verbose_name="Избранное"),
+                ),
+                (
+                    "slug",
+                    models.SlugField(max_length=255, unique=True, verbose_name="Слаг"),
+                ),
+                (
+                    "create_time",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Дата создания"
+                    ),
+                ),
+                (
+                    "update_time",
+                    models.DateTimeField(auto_now=True, verbose_name="Дата изменения"),
+                ),
+                (
+                    "author",
+                    models.ManyToManyField(
+                        related_name="book",
+                        to="booklibrary.author",
+                        verbose_name="Автор",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="books",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="booklibrary.category",
+                        verbose_name="Категория",
+                    ),
+                ),
+                (
+                    "subcategory",
+                    models.ManyToManyField(
+                        related_name="book",
+                        to="booklibrary.subcategory",
+                        verbose_name="Подкатегория",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Книга',
-                'verbose_name_plural': 'Книги',
-                'ordering': ['-create_time'],
-                'indexes': [models.Index(fields=['-create_time'], name='booklibrary_create__6516c3_idx')],
+                "verbose_name": "Книга",
+                "verbose_name_plural": "Книги",
+                "ordering": ["-create_time"],
+                "indexes": [
+                    models.Index(
+                        fields=["-create_time"], name="booklibrary_create__6516c3_idx"
+                    )
+                ],
             },
         ),
     ]

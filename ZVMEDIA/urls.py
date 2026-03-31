@@ -19,18 +19,24 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from ZVMEDIA import settings
-from booklibrary.views import page_not_found
+from booklibrary import views as book_views
+from musiclibrary import views as music_views
+from movielibrary import views as movie_views
+from users import views as users_views
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("booklibrary.urls")),
-    path("", include("musiclibrary.urls")),
-    path("", include("movielibrary.urls")),
-    path("", include("users.urls")),
+    path("books/", include("booklibrary.urls")),
+    path("musics/", include("musiclibrary.urls")),
+    path("movies/", include("movielibrary.urls")),
+    path("users/", include("users.urls")),
+    path("login/", users_views.userlogin, name="login"),
+    path("logout/", users_views.userlogout, name="logout"),
+    path("", users_views.index, name="home"),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-handler_404 = page_not_found
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# handler_404 = page_not_found

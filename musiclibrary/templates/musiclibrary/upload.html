@@ -1,0 +1,9 @@
+<div class="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="text-xl mb-4">Выбери кучу файлов (MP3, FLAC)</h2>
+        <input type="file" name="files" multiple class="mb-4">
+        <br>
+        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded">Загрузить всё</button>
+    </form>
+</div>

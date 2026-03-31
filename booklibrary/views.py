@@ -1,5 +1,6 @@
 import os
 import json
+from django.core.files.base import ContentFile
 from datetime import datetime, timedelta, date
 from django.utils import timezone
 from django.http import Http404, HttpResponse, HttpResponseNotFound, FileResponse
@@ -19,7 +20,6 @@ from booklibrary.forms import (
     AddBookSubcategoryForm,
     ChangeBookForm,
     UpdatedBookUploadForm,
-    UserLoginForm,
 )
 from ZVMEDIA.settings import MEDIA_ROOT
 from booklibrary.modules.services.utils import UserToFormMixin
@@ -78,10 +78,15 @@ def show_detail_book(request, book_slug):
 def book_init_as_pdf(request, book_slug):
     pdf_url = f"/books/getpdf/{book_slug}"
     try:
+        book = Book.objects.get(slug=book_slug)
+    except Exception as e:
+        print("book_init_as_pdf: Book.objects.get(slug=book_slug): ZALUPA")
+    try:
         template = "booklibrary/init_detail_book.html"
         context = {
             "pdf_url": json.dumps(pdf_url, cls=DjangoJSONEncoder),
             "slug": json.dumps(book_slug, cls=DjangoJSONEncoder),
+            "filename": book.file.__str__,
         }
         return render(request, template_name=template, context=context)
     except:
@@ -111,31 +116,83 @@ def book_get_pdf(request, book_slug):
 
 
 # @csrf_exempt
+# def book_set_pdf(request, book_slug):
+#     if request.method == "POST":
+#         book = Book.objects.get(slug=book_slug)
+#         try:
+#             book_path = book.file.path
+#             filename = (book.file.name).split("/")[1]
+#             book.file = request.FILES["book"]
+#             book.file.name = filename
+#             os.remove(book_path)
+#             book.save(update_fields=["file"])
+#         except:
+#             response = {"is_taken": False}
+#             response = {"is_taken": False}
+#     response = {"is_taken": True}
+#     return JsonResponse(response)
+
+import os
+from django.http import JsonResponse
+from .models import Book
+
+
 def book_set_pdf(request, book_slug):
     if request.method == "POST":
-        book = Book.objects.get(slug=book_slug)
+        # УДАЛЯЕМ json.loads(request.body), файлы живут в request.FILES
+
         try:
-            book_path = book.file.path
-            filename = (book.file.name).split("/")[1]
-            book.file = request.FILES["book"]
-            book.file.name = filename
-            os.remove(book_path)
-            book.save(update_fields=["file"])
-        except:
-            response = {"is_taken": False}
-    response = {"is_taken": True}
-    return JsonResponse(response)
+            # 1. Ищем книгу
+            book = Book.objects.get(slug=book_slug)
+
+            # 2. Проверяем, прилетел ли файл
+            if "book" not in request.FILES:
+                return JsonResponse(
+                    {"is_taken": False, "error": "No file uploaded"}, status=400
+                )
+
+            new_file = request.FILES["book"]
+
+            # 3. Удаляем старый файл физически (чтобы не плодить копии)
+            # Важно: делаем это ДО присвоения нового, пока у нас есть старый путь
+            if book.file and os.path.isfile(book.file.path):
+                try:
+                    os.remove(book.file.path)
+                except OSError:
+                    pass  # Если файл уже удален или занят, не падаем
+
+            # 4. Обновляем файл
+            # Django сам вызовет твой upload_to, используя текущий slug и оригинальное имя файла
+            book.file = new_file
+
+            # 5. Сохраняем
+            # В твоем случае лучше сохранить весь объект, чтобы отработала логика
+            # пересчета страниц и слов внутри метода save()
+            book.save()
+
+            return JsonResponse({"is_taken": True})
+
+        except Book.DoesNotExist:
+            return JsonResponse(
+                {"is_taken": False, "error": "Book not found"}, status=404
+            )
+        except Exception as e:
+            # Выводим ошибку в консоль сервера, чтобы ты видел, если что-то пойдет не так
+            print(f"Ошибка сохранения PDF: {e}")
+            return JsonResponse({"is_taken": False, "error": str(e)}, status=500)
+
+    return JsonResponse({"is_taken": False, "error": "Invalid request"}, status=400)
 
 
 # @csrf_exempt
 def ajax_update_extradata_book(request, book_slug):
     if request.method == "POST":
-        ajax_request = json.load(request)
+        data = json.load(request)
         book = Book.objects.get(slug=book_slug)
         current_time_spent = book.time_spent
-        current_page = ajax_request["current_page"]
+        current_page = data["current_page"]
         progress = (current_page / book.pages_count) * 100
-        update_time_spent = float((ajax_request["seconds"]) / 60) / 60
+        update_time_spent = float((data["seconds"]) / 60) / 60
         book.time_spent = current_time_spent + update_time_spent
         book.current_page = current_page
         book.progress = float(f"{progress:.2f}")
@@ -235,14 +292,30 @@ class UpdateBook(LoginRequiredMixin, UpdateView):
 
 
 def delete_book(request, book_slug):
-    if request.method == "POST":
-        try:
-            Book.objects.get(slug=book_slug).delete()
-        except:
-            error_response = {"state": False}
-        else:
+    # get_object_or_404 сразу выкинет 404, если слага нет, а не упадет с ошибкой
+    book = get_object_or_404(Book, slug=book_slug)
+
+    try:
+        # Удаляем файл с диска перед удалением записи
+        if book.file and os.path.isfile(book.file.path):
+            os.remove(book.file.path)
+
+            # Если хочешь удалить и папку со слагом (чтобы не плодить пустые папки):
+            folder_path = os.path.dirname(book.file.path)
+            if os.path.isdir(folder_path) and not os.listdir(folder_path):
+                os.rmdir(folder_path)
+
+        book.delete()
+
+        # Если это обычный запрос — редиректим
+        if request.headers.get("x-requested-with") != "XMLHttpRequest":
             return redirect("books")
-        return JsonResponse(error_response)
+
+        # Если это AJAX (наш JS выше), возвращаем URL для редиректа
+        return JsonResponse({"state": True, "url": "/books/"})
+
+    except Exception as e:
+        return JsonResponse({"state": False, "error": str(e)}, status=500)
 
 
 class CreateBookAuthor(LoginRequiredMixin, CreateView):
@@ -343,31 +416,6 @@ class CreateBookSubcategory(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
-
-
-def index(request):
-    return render(request, "zvmedia/index.html")
-
-
-def userlogin(request):
-    if request.method == "POST":
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            login(request, form.get_user())
-            messages.success(request, "Успешный вход")
-            return redirect("books")
-        else:
-            messages.error(request, "Ошибка входа")
-    else:
-        form = UserLoginForm()
-    return render(
-        request, template_name="booklibrary/login.html", context={"form": form}
-    )
-
-
-def userlogout(request):
-    logout(request)
-    return redirect("booklibrary/login")
 
 
 def page_not_found(request, exception):

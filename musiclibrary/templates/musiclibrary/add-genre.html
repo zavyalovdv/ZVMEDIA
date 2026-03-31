@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% block title %}Добавить жанр{% endblock %}
+{% block content %}
+<div class="form-page">
+    <div class="form-card">
+        <h2>Новый <em>жанр</em></h2>
+        <form method="post" enctype="multipart/form-data" action="">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mb-3" style="margin-top: 28px;">
+                <input type="submit" value="Добавить жанр" class="form-control">
+            </div>
+            {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

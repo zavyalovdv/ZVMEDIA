@@ -1,42 +1,20 @@
 from decimal import Decimal
-import os
-import pathlib
-
 from django.urls import reverse
 from django.contrib.auth.models import User
 from booklibrary.const import *
 from simple_history import register
 from simple_history.models import HistoricalRecords
-from PyPDF2 import PdfFileReader
 from django.db import models
-from epub_conversion.utils import open_book, convert_epub_to_lines
-from booklibrary.modules.services.utils import unique_slugify_models
-
-
-def user_directory_path(instance, filename):
-    return f"books/{instance.user.username}/{filename}"
-
-
-register(User)
-
-
-class UserProfileSettings(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    book_verbose_type = models.BooleanField(
-        verbose_name="Просмотрщик книг", choices=BOOK_VERBOSE_TYPE, default=True
-    )
-    order_by = models.CharField(
-        verbose_name="Поле для сортировки", max_length=200, blank=True, null=True
-    )
-    is_reverse_order_by = models.BooleanField(
-        verbose_name="Прямой или обратный порядок сортировки", blank=True, null=True
-    )
+from booklibrary.modules.services.utils import (
+    get_unique_slugify_models,
+    get_user_directory_path,
+)
 
 
 class Book(models.Model):
     user = models.ForeignKey(User, related_name="books", on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Название", max_length=200, db_index=True)
-    file = models.FileField(verbose_name="Файл", upload_to=user_directory_path)
+    file = models.FileField(verbose_name="Файл", upload_to=get_user_directory_path)
     author = models.ManyToManyField("Author", verbose_name="Автор", related_name="book")
     category = models.ForeignKey(
         "Category", verbose_name="Категория", on_delete=models.PROTECT
@@ -87,7 +65,7 @@ class Book(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = unique_slugify_models(self, self.name)
+            self.slug = get_unique_slugify_models(self, self.name)
         if not self.status:
             self.status = "не читалась"
         if not self.is_favorites:
@@ -113,7 +91,7 @@ class Author(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = unique_slugify_models(self, self.name)
+            self.slug = get_unique_slugify_models(self, self.name)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -133,7 +111,7 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = unique_slugify_models(self, self.name)
+            self.slug = get_unique_slugify_models(self, self.name)
 
         super().save(*args, **kwargs)
 
@@ -159,7 +137,7 @@ class Subcategory(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = unique_slugify_models(self, self.name)
+            self.slug = get_unique_slugify_models(self, self.name)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

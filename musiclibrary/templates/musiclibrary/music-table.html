@@ -1,0 +1,88 @@
+{% block 'music_table' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'booklibrary/css/datatables.min.css' %}">
+
+<div class="data-tables vh-100">
+
+    <!-- Toolbar -->
+    <div class="table-toolbar">
+        <div class="search-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input type="search" id="searchbox" placeholder="Поиск книг…">
+        </div>
+        <a href="{% url 'add_book' %}" class="btn btn-accent">
+            <i class="fas fa-plus"></i> Добавить книгу
+        </a>
+        <button class="btn btn-ghost" id="toggle-favorites" title="Только избранное">
+            <i class="fas fa-star"></i>
+        </button>
+    </div>
+
+    <!-- Table -->
+    <table class="table compact display nowrap music-table" id="music-table" style="width:100%">
+        <thead>
+            <tr>
+                <th>Трек</th>
+                <th>Исполнитель</th>
+                <th>Альбом</th>
+                <th>Жанр</th>
+                <th>Жанр авто.</th>
+                <th>Год</th>
+                <th>Файл</th>
+                <th>Формат</th>
+                <th>★</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for track in tracks %}
+            <tr>
+                <td>{{ track.title }}</td>
+                <td>{{ track.artist }}</td>
+                <td>{{ track.album }}</td>
+                <td>{{ track.genre }}</td>
+                <td>{{ track.genre_auto_detect }}</td>
+                <td>{{ track.date }}</td>
+                <td>{{ track.file_name }}</td>
+                <td>{{ track.format }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
+<script src="{% static 'booklibrary/js/notify.min.js' %}"></script>
+<script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    let table = $('#music-table').DataTable({
+        paging: false,
+        select: true,
+        scrollX: true,
+        scrollCollapse: true,
+        searching: true,
+        dom: 't',
+        autoWidth: false,
+        order: [],
+    });
+
+</script>
+{% endblock %}

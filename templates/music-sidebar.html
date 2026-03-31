@@ -1,0 +1,60 @@
+<aside class="sidebar">
+
+    <!-- Library section -->
+    <div class="sidebar-section">
+        <div class="sidebar-label">Музыка</div>
+        <a href="{% url 'books' %}" class="sidebar-link {% if request.resolver_match.url_name == 'books' %}active{% endif %}">
+            <i class="fas fa-th-list"></i>
+            <span>Все треки</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-star"></i>
+            <span>Избранное</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-bookmark"></i>
+            <span>Плейлисты</span>
+        </a>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- Genres -->
+    <div class="sidebar-section">
+        <div class="sidebar-label">Жанры</div>
+        {% for genre in genres %}
+        <div>
+            {% comment %}<a href="{% url 'genres' genre.slug %}" class="sidebar-link btn-toggle">{% endcomment %}
+            <a href="" class="sidebar-link btn-toggle">
+                <i class="fas fa-folder"></i>
+                <span>{{ genre }}</span>
+            </a>
+            {% if category.subcategory_set.all %}
+            <div class="sidebar-sub">
+                {% for sub in category.subcategory_set.all %}
+                <a href="{% url 'books_subcategory' sub.slug %}" class="sidebar-link">
+                    <i class="fas fa-angle-right" style="font-size:10px;"></i>
+                    <span>{{ sub.name }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- Management -->
+    <div class="sidebar-section">
+        <div class="sidebar-label">Управление</div>
+        <a href="{% url 'add_track' %}" class="sidebar-link">
+            <i class="fas fa-plus-circle"></i>
+            <span>Добавить трек</span>
+        </a>
+        <a href="{% url 'add_genre' %}" class="sidebar-link">
+            <i class="fas fa-folder-plus"></i>
+            <span>Добавить жанр</span>
+        </a>
+    </div>
+</aside>

@@ -129,9 +129,11 @@
                             <li><a class="text-secondary" href="{% url 'edit_book' book.slug %}">
                                     <i class="fas fa-edit"></i> Редактировать
                                 </a></li>
-                            <li><a class="text-danger" href="{% url 'remove_book' book.slug %}">
+                            <li>
+                                <a class="text-danger" href="javascript:void(0)" onclick="deleteBook('{{ book.slug }}')">
                                     <i class="fas fa-trash-alt"></i> Удалить
-                                </a></li>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </td>
@@ -146,6 +148,42 @@
 <script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>
 
 <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function deleteBook(slug) {
+        if (!confirm('Реально удалить книгу? Восстановить не получится.')) return;
+
+        const response = await fetch(`/books/removebook/${slug}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+        });
+
+        if (response.redirected) {
+            // Если Django ответил redirect("books"), браузер перейдет туда
+            window.location.href = response.url;
+        } else {
+            const data = await response.json();
+            if (data.state === false) {
+                alert('Ошибка при удалении');
+            }
+        }
+    }
     let table = $('#books-table').DataTable({
         paging: false,
         select: true,

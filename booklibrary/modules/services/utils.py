@@ -8,7 +8,13 @@ from booklibrary.const import *
 from ZVMEDIA.settings import BASE_DIR, MEDIA_ROOT
 
 
-def unique_slugify_models(instance, pre_slug):
+def get_user_directory_path(instance, filename):
+    # instance.slug уже должен быть сгенерирован в методе save() до этого момента
+    # Формируем путь: booklibrary/admin/moy-slug-knigi/original_name.pdf
+    return os.path.join("booklibrary", instance.user.username, instance.slug, filename)
+
+
+def get_unique_slugify_models(instance, pre_slug):
     model = instance.__class__
     unique_slug = slugify(pre_slug)
     while model.objects.filter(slug=unique_slug).exists():
