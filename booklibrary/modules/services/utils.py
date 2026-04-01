@@ -11,7 +11,7 @@ from ZVMEDIA.settings import BASE_DIR, MEDIA_ROOT
 def get_user_directory_path(instance, filename):
     # instance.slug уже должен быть сгенерирован в методе save() до этого момента
     # Формируем путь: booklibrary/admin/moy-slug-knigi/original_name.pdf
-    return os.path.join("booklibrary", instance.user.username, instance.slug, filename)
+    return os.path.join("booklibrary", instance.user.username, filename)
 
 
 def get_unique_slugify_models(instance, pre_slug):

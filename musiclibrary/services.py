@@ -1,42 +1,84 @@
+import os
+from ZVMEDIA import settings
 from mutagen import File as MutagenFile
 from django.core.files.base import ContentFile
 from musiclibrary.models import Album, Artist, Track
+from pathlib import Path
 
 
 def extract_metadata(object):
-    try:
-        audio = MutagenFile(object.file.path, easy=True)
-        if audio is None:
-            print("не удалось прочитать файл")
-            return
+    # try:
+    audio = MutagenFile(object.file.path, easy=True)
+    if audio is None:
+        print("не удалось прочитать файл")
+        return
 
-        object.file_name = object.file.path.split("/")[-1]
-        object.format = object.file_name.split(".")[-1].upper()
+    file_dir_name = os.path.dirname(object.file.path)
+    file_name = object.file.path.split("/")[-1]
+    file_title = file_name.split(".")[-0]
+    file_format = file_name.split(".")[-1]
 
-        object.title = audio.get("title", [None])[0] or object.file_name.split(".")[0]
-        raw_artist = audio.get("artist", ["Unknown Artist"])[0]
-        raw_album = audio.get("album", ["Unknown Album"])[0]
-        artist_obj, _ = Artist.objects.get_or_create(name=raw_artist)
-        album_obj, _ = Album.objects.get_or_create(artist=artist_obj, title=raw_album)
-        object.date = audio.get("date", [None])[0]
-        object.duration = getattr(audio.info, "length", 0)
-        object.track_number = audio.get("tracknumber", [None])[0]
-        object.disk = audio.get("disknumber", [None])[0]
-        object.total_tracks = audio.get("totaltracks", [None])[0]
-        object.bitrate = None
-        object.genre = object.genre
-        object.genre_auto_detect = audio.get("genre", ["Unknown"])[0]
-        object.artist = artist_obj
-        object.album = album_obj
-        object.save()
-        # # Обложку тянем только если у альбома её еще нет
-        # if not album.cover:
-        #     # Для обложек EasyID3 не подходит, нужно переоткрыть файл
-        #     full_audio = MutagenFile(self.file.path)
-        #     self.extract_cover(full_audio, album)
+    if check_file_extension(file_format):
+        file_format = fix_file_extension(file_format)
+        rename_file(object)
+        file_name = f"{file_title}.{file_format.lower()}"
 
-    except Exception as e:
-        print(f"Ошибка парсинга тегов: {e}")
+    raw_artist = audio.get("artist", ["Unknown Artist"])[0]
+    raw_album = audio.get("album", ["Unknown Album"])[0]
+
+    fix_album = fix_album_name(raw_album)
+
+    object.file_name = file_name
+    object.file_format = file_format
+    object.title = audio.get("title", [None])[0] or object.file_name.split(".")[0]
+
+    artist_obj, _ = Artist.objects.get_or_create(name=raw_artist, user=object.user)
+    album_obj, _ = Album.objects.get_or_create(
+        artist=artist_obj, title=fix_album, user=object.user
+    )
+    object.date = audio.get("date", [None])[0]
+    object.duration = getattr(audio.info, "length", 0)
+    object.track_number = audio.get("tracknumber", [None])[0]
+    object.disk = audio.get("disknumber", [None])[0]
+    object.total_tracks = audio.get("totaltracks", [None])[0]
+    object.bitrate = None
+    object.genre = object.genre
+    object.genre_auto_detect = audio.get("genre", ["Unknown"])[0]
+    object.artist = artist_obj
+    object.album = album_obj
+    object.save()
+
+
+def check_file_extension(raw_file_extension):
+    print("In check_file_extension")
+    if raw_file_extension.lower() == "flacon":
+        return True
+
+
+def fix_file_extension(raw_file_extension):
+    print("In fix_file_extension")
+    if raw_file_extension.lower() == "flacon":
+        new_file_extension = "flac"
+
+    return new_file_extension
+
+
+def rename_file(file):
+    old_path = Path(file.file.path)
+    if old_path.suffix.lower() == ".flacon":
+        new_path = old_path.with_suffix(".flac")
+
+        if old_path.exists():
+            old_path.rename(new_path)
+
+        file.file.name = str(new_path.relative_to(settings.MEDIA_ROOT))
+        file.save(update_fields=["file"])
+
+
+def fix_album_name(raw_album):
+    if "(" in raw_album:
+        return raw_album.split("(")[0].strip()
+    return raw_album
 
 
 def extract_cover(self, audio, album):

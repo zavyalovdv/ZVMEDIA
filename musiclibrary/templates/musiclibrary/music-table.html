@@ -1,6 +1,64 @@
 {% block 'music_table' %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'booklibrary/css/datatables.min.css' %}">
+<style>
+    /* Панель плеера */
+    .audio-player-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 90px;
+        background: #222; /* Темный фон */
+        color: white;
+        border-top: 1px solid #444;
+        z-index: 9999; /* Поверх всего */
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .player-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        width: 100%;
+        align-items: center;
+    }
+
+    .player-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .progress-box {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+    }
+
+    #progress-bar {
+        flex-grow: 1;
+        accent-color: #007bff;
+    }
+
+    .main-play-btn {
+        background: #007bff;
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        margin-bottom: 5px;
+    }
+
+    /* Отступ для таблицы, чтобы плеер её не закрывал */
+    .data-tables {
+        margin-bottom: 100px;
+    }
+</style>
 <div class="data-tables vh-100">
 
     <!-- Toolbar -->
@@ -58,7 +116,32 @@
         </tbody>
     </table>
 </div>
-<audio id="global-audio-player" style="display:none;"></audio>
+<div class="audio-player-bar">
+    <div class="player-grid">
+        <div class="player-info">
+            <b id="player-track-title">Трек не выбран</b>
+            <div id="player-track-artist" style="font-size: 12px; color: #aaa;">...</div>
+        </div>
+
+        <div class="player-controls">
+            <div class="control-buttons">
+                <button id="player-play-pause" class="main-play-btn"><i class="fas fa-play"></i></button>
+            </div>
+            <div class="progress-box">
+                <span id="current-time">0:00</span>
+                <input type="range" id="progress-bar" value="0" min="0" max="100">
+                <span id="duration-time">0:00</span>
+            </div>
+        </div>
+
+        <div class="player-volume">
+            <i class="fas fa-volume-up"></i>
+            <input type="range" id="volume-bar" value="80" min="0" max="100">
+        </div>
+    </div>
+</div>
+
+<audio id="global-audio-player"></audio>
 <script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
 <script src="{% static 'booklibrary/js/notify.min.js' %}"></script>
 <script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>
@@ -78,54 +161,88 @@
         }
         return cookieValue;
     }
-
-    let table = $('#music-table').DataTable({
-        paging: false,
-        select: true,
-        scrollX: true,
-        scrollCollapse: true,
-        searching: true,
-        dom: 't',
-        autoWidth: false,
-        order: [],
-    });
-$('#music-table').on('click', '.btn-play-track', function(e) {
-    e.preventDefault(); // Предотвращаем стандартное поведение
-
-    // Берем URL напрямую из атрибута нажатой кнопки
-    const trackUrl = $(this).attr('data-url'); 
-    const icon = $(this).find('i');
-
-    console.log("Пытаемся воспроизвести:", trackUrl); // Для отладки в консоли F12
-
-    if (!trackUrl || trackUrl === "undefined") {
-        console.error("Ошибка: URL трека не найден!");
-        return;
-    }
-
+    $(document).ready(function() {
     const player = document.getElementById('global-audio-player');
-
-    // Если этот же трек уже играет — пауза
-    if (player.src.endsWith(trackUrl) && !player.paused) {
-        player.pause();
-        icon.removeClass('fa-pause').addClass('fa-play');
-        return;
-    }
-
-    // Если новый трек
-    if (!player.src.endsWith(trackUrl)) {
-        player.src = trackUrl;
-        
-        // Сбрасываем иконки у всех остальных кнопок
-        $('.btn-play-track i').removeClass('fa-pause').addClass('fa-play');
-    }
-
-    player.play().catch(error => {
-        console.error("Ошибка воспроизведения:", error);
-    });
     
-    icon.removeClass('fa-play').addClass('fa-pause');
-    currentPlayingBtn = $(this);
+    if (!player) {
+        console.error("Критическая ошибка: Элемент #global-audio-player не найден в DOM!");
+    } else {
+        console.log("Плеер инициализирован");
+    }
+    
+    // ... остальной код из прошлого ответа ...
+});
+const player = document.getElementById('global-audio-player');
+const playPauseBtn = document.getElementById('player-play-pause');
+const progressBar = document.getElementById('progress-bar');
+const volumeBar = document.getElementById('volume-bar');
+const currentTimeEl = document.getElementById('current-time');
+const durationTimeEl = document.getElementById('duration-time');
+
+// Функция форматирования времени (секунды -> 0:00)
+function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${min}:${sec < 10 ? '0' + sec : sec}`;
+}
+
+// Клик по кнопке Play в таблице
+$('#music-table').on('click', '.btn-play-track', function() {
+    const btn = $(this);
+    const url = btn.data('url');
+    const row = btn.closest('tr');
+    
+    // Обновляем инфо в плеере
+    $('#player-track-title').text(row.find('td:eq(0)').text().trim());
+    $('#player-track-artist').text(row.find('td:eq(1)').text().trim());
+
+    if (player.src.endsWith(url)) {
+        if (player.paused) player.play();
+        else player.pause();
+    } else {
+        player.src = url;
+        player.play();
+    }
+});
+
+// Клик по главной кнопке Play/Pause в баре
+playPauseBtn.addEventListener('click', () => {
+    if (player.paused) player.play();
+    else player.pause();
+});
+
+// Обновление состояния кнопок
+player.onplay = () => {
+    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    $('.btn-play-track i').removeClass('fa-pause').addClass('fa-play');
+    // Ищем кнопку в таблице по URL и меняем ей иконку
+    $(`.btn-play-track[data-url="${player.getAttribute('src')}"] i`).addClass('fa-pause');
+};
+
+player.onpause = () => {
+    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+    $('.btn-play-track i').removeClass('fa-pause').addClass('fa-play');
+};
+
+// Обновление прогресс-бара
+player.ontimeupdate = () => {
+    const per = (player.currentTime / player.duration) * 100;
+    progressBar.value = per || 0;
+    currentTimeEl.textContent = formatTime(player.currentTime);
+    if (!isNaN(player.duration)) {
+        durationTimeEl.textContent = formatTime(player.duration);
+    }
+};
+
+// Перемотка
+progressBar.addEventListener('input', () => {
+    const time = (progressBar.value / 100) * player.duration;
+    player.currentTime = time;
+});
+
+// Громкость
+volumeBar.addEventListener('input', () => {
+    player.volume = volumeBar.value / 100;
 });
 </script>
 {% endblock %}

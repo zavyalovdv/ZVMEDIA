@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.views.generic import ListView, DetailView, CreateView
 from django.db.models import Q
 from .models import Genre, Track, Album, Artist
@@ -41,21 +41,24 @@ class AddTrack(CreateView):
         return context
 
     def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.save()
+        form.instance.user = self.request.user
+        self.object = form.save()
         if self.object.file:
-            file_path = self.object.file.path
             services.extract_metadata(self.object)
 
-        self.object.save()
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class AddGenre(CreateView):
     model = Genre
-    # fields = ["name"]
+    fields = ["name"]
     template_name = "musiclibrary/add-genre.html"
     success_url = reverse_lazy("music")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        self.object = form.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 def get_genres(request):

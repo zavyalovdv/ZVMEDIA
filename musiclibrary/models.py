@@ -2,6 +2,14 @@ from django.db import models
 from django.urls import reverse
 from uuid import uuid4
 from pytils.translit import slugify
+import os
+from django.contrib.auth.models import User
+
+
+def get_user_directory_path(instance, filename):
+    # instance.slug уже должен быть сгенерирован в методе save() до этого момента
+    # Формируем путь: booklibrary/admin/moy-slug-knigi/original_name.pdf
+    return os.path.join("musiclibrary", instance.user.username, filename)
 
 
 def get_unique_slugify_models(instance, pre_slug):
@@ -16,6 +24,12 @@ class Artist(models.Model):
     name = models.CharField(max_length=255, unique=True)
     image = models.ImageField(upload_to="artists/", null=True, blank=True)
     slug = models.SlugField(verbose_name="Слаг", unique=True, null=True, blank=True)
+    user = models.ForeignKey(
+        to=User,
+        verbose_name="Пользователь",
+        related_name="Artists",
+        on_delete=models.CASCADE,
+    )
 
     def __str__(self):
         return self.name
@@ -32,6 +46,12 @@ class Album(models.Model):
     release_year = models.IntegerField(null=True, blank=True)
     cover = models.ImageField(upload_to="covers/", null=True, blank=True)
     slug = models.SlugField(verbose_name="Слаг", unique=True, null=True, blank=True)
+    user = models.ForeignKey(
+        to=User,
+        verbose_name="Пользователь",
+        related_name="Albums",
+        on_delete=models.CASCADE,
+    )
 
     def __str__(self):
         return f"{self.title}"
@@ -57,7 +77,7 @@ class Track(models.Model):
     )
     date = models.CharField(verbose_name="Год", null=True, blank=True)
     file_name = models.CharField(verbose_name="Имя файла", null=True, blank=True)
-    file = models.FileField(upload_to="music/")
+    file = models.FileField(upload_to=get_user_directory_path)
     duration = models.FloatField(default=0, null=True, blank=True)
     track_number = models.IntegerField(
         verbose_name="Номер трека", null=True, blank=True
@@ -85,6 +105,12 @@ class Track(models.Model):
         blank=True,
     )
     slug = models.SlugField(verbose_name="Слаг", unique=True, null=True, blank=True)
+    user = models.ForeignKey(
+        to=User,
+        verbose_name="Пользователь",
+        related_name="Tracks",
+        on_delete=models.CASCADE,
+    )
 
     def save(self, *args, **kwargs):
         # Если это первая загрузка файла
@@ -97,6 +123,12 @@ class Track(models.Model):
 class Genre(models.Model):
     name = models.CharField(verbose_name="Жанр", unique=True)
     slug = models.SlugField(verbose_name="Слаг", unique=True, null=True, blank=True)
+    user = models.ForeignKey(
+        to=User,
+        verbose_name="Пользователь",
+        related_name="Genres",
+        on_delete=models.CASCADE,
+    )
 
     # def get_absolute_url(self):
     #     # Например, возвращать пользователя на страницу со списком всех жанров
