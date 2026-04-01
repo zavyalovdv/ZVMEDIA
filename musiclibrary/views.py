@@ -48,6 +48,36 @@ class AddTrack(CreateView):
 
         return HttpResponseRedirect(self.get_success_url())
 
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        # Получаем список всех файлов из инпута
+        files = request.FILES.getlist("file")
+
+        if form.is_valid():
+            # Если файлов нет, но форма валидна (например, только жанр выбрали)
+            if not files:
+                return self.form_invalid(form)
+
+            for f in files:
+                # Создаем объект в памяти, не сохраняя в БД
+                track = Track(
+                    user=request.user,
+                    file=f,
+                    genre=form.cleaned_data["genre"],
+                    # Временный заголовок из имени файла, пока extract_metadata не вытащит теги
+                    title=f.name,
+                )
+
+                # Сохраняем объект. Здесь сработает твой upload_to
+                track.save()
+
+                # Запускаем твой сервис (с pathlib и фиксом расширения)
+                services.extract_metadata(track)
+
+            return redirect(self.success_url)
+        else:
+            return self.form_invalid(form)
+
 
 class AddGenre(CreateView):
     model = Genre
