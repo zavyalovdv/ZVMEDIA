@@ -19,7 +19,6 @@ def extract_metadata(object):
 
     if check_file_extension(file_format):
         file_format = fix_file_extension(file_format)
-        # rename_file(object)
         file_name = f"{file_title}.{file_format.lower()}"
 
     raw_artist = audio.get("artist", ["Unknown Artist"])[0]
@@ -45,7 +44,6 @@ def extract_metadata(object):
     object.genre_auto_detect = audio.get("genre", ["Unknown"])[0]
     object.artist = artist_obj
     object.album = album_obj
-    # object.save()
     return object
 
 

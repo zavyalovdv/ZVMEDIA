@@ -1,6 +1,6 @@
 class MusicApp {
     constructor($jq) {
-        // Передаем конкретный экземпляр jQuery (назовем его $jq)
+        // Передаем конкретный экземпляр jQuery
         this.$ = $jq;
 
         this.player = document.getElementById('global-audio-player');
@@ -10,7 +10,6 @@ class MusicApp {
         this.currentTimeEl = document.getElementById('current-time');
         this.durationTimeEl = document.getElementById('duration-time');
 
-        // Используем наш проверенный $jq
         this.trackTitle = this.$('#player-track-title');
         this.trackArtist = this.$('#player-track-artist');
 
@@ -36,7 +35,7 @@ class MusicApp {
     }
 
     bindEvents() {
-        // Делегируем события через наш $jq
+        // Делегируем события через $jq
         this.$(document).on('click', '.btn-play-track', (e) => this.handleTablePlay(e));
 
         this.playPauseBtn.addEventListener('click', () => this.togglePlay());
@@ -51,10 +50,8 @@ class MusicApp {
     handleTablePlay(e) {
         const btn = this.$(e.currentTarget);
         const url = btn.data('url');
-        const row = btn.closest('tr');
-
-        this.trackTitle.text(row.find('td:eq(0)').text().trim());
-        this.trackArtist.text(row.find('td:eq(1)').text().trim());
+        // ... остальной код
+        this.currentTrackUrl = url; // Запоминаем, что мы включили
 
         if (this.player.src.endsWith(url)) {
             this.togglePlay();
@@ -78,12 +75,16 @@ class MusicApp {
         }
     }
 
+
     updateUI(isPlaying) {
         this.playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
         this.$('.btn-play-track i').removeClass('fa-pause').addClass('fa-play');
-        if (isPlaying) {
-            const currentSrc = this.player.getAttribute('src');
-            this.$(`.btn-play-track[data-url="${currentSrc}"] i`).addClass('fa-pause');
+
+        if (isPlaying && this.currentTrackUrl) {
+            // Ищем по сохраненному относительному пути
+            this.$(`.btn-play-track[data-url="${this.currentTrackUrl}"] i`)
+                .removeClass('fa-play')
+                .addClass('fa-pause');
         }
     }
 
@@ -102,8 +103,6 @@ class MusicApp {
     }
 }
 
-// ЗАПУСК: Передаем jQuery явно
 jQuery(document).ready(function ($) {
-    // Внутри этой функции $ — это ТОЧНО тот jQuery, который нам нужен
     window.app = new MusicApp($);
 });
