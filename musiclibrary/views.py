@@ -72,7 +72,9 @@ class AddTrack(CreateView):
                 track.save()
 
                 # Запускаем твой сервис (с pathlib и фиксом расширения)
-                services.extract_metadata(track)
+                track = services.extract_metadata(track)
+                services.rename_file(track)
+                track.save()
 
             return redirect(self.success_url)
         else:

@@ -13,14 +13,13 @@ def extract_metadata(object):
         print("не удалось прочитать файл")
         return
 
-    file_dir_name = os.path.dirname(object.file.path)
     file_name = object.file.path.split("/")[-1]
     file_title = file_name.split(".")[-0]
     file_format = file_name.split(".")[-1]
 
     if check_file_extension(file_format):
         file_format = fix_file_extension(file_format)
-        rename_file(object)
+        # rename_file(object)
         file_name = f"{file_title}.{file_format.lower()}"
 
     raw_artist = audio.get("artist", ["Unknown Artist"])[0]
@@ -31,7 +30,7 @@ def extract_metadata(object):
     object.file_name = file_name
     object.file_format = file_format
     object.title = audio.get("title", [None])[0] or object.file_name.split(".")[0]
-
+    object.format = file_format.upper()
     artist_obj, _ = Artist.objects.get_or_create(name=raw_artist, user=object.user)
     album_obj, _ = Album.objects.get_or_create(
         artist=artist_obj, title=fix_album, user=object.user
@@ -46,7 +45,8 @@ def extract_metadata(object):
     object.genre_auto_detect = audio.get("genre", ["Unknown"])[0]
     object.artist = artist_obj
     object.album = album_obj
-    object.save()
+    # object.save()
+    return object
 
 
 def check_file_extension(raw_file_extension):
