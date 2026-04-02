@@ -1,0 +1,224 @@
+/* Панель плеера */
+.audio-player-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+    background: #222;
+    /* Темный фон */
+    color: white;
+    border-top: 1px solid #444;
+    z-index: 9999;
+    /* Поверх всего */
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+}
+
+.player-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    width: 100%;
+    align-items: center;
+}
+
+.player-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.progress-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+#progress-bar {
+    flex-grow: 1;
+    accent-color: #007bff;
+}
+
+.main-play-btn {
+    background: #007bff;
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+/* Отступ для таблицы, чтобы плеер её не закрывал */
+.data-tables {
+    margin-bottom: 100px;
+}
+
+/* Панель плеера */
+.audio-player-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: var(--bg-2);
+    /* Твой темный фон */
+    color: var(--text-1);
+    border-top: 1px solid var(--border-2);
+    z-index: 9999;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
+    /* Легкий эффект стекла */
+}
+
+.player-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    width: 100%;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Инфо о треке */
+.player-info #player-track-title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--accent);
+    /* Золотистый заголовок */
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-info #player-track-artist {
+    font-family: var(--font-body);
+    color: var(--text-3) !important;
+    /* Серый текст */
+    letter-spacing: 0.5px;
+}
+
+/* Кнопка управления */
+.main-play-btn {
+    background: var(--accent);
+    border: none;
+    color: var(--bg);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: var(--transition);
+    box-shadow: 0 0 15px var(--accent-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.main-play-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px var(--accent-glow);
+    background: #d4b982;
+    /* Чуть светлее при наведении */
+}
+
+/* Прогресс-бар и время */
+.progress-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 15px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-3);
+}
+
+/* Кастомизация ползунков (Progress & Volume) */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+    height: 20px;
+    /* Увеличим область клика, чтобы легче было попадать */
+}
+
+/* Линия, по которой едет ползунок (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    background: var(--surface-2);
+    /* Светлее, чем фон плеера */
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    /* Тонкая рамка для объема */
+}
+
+/* Сам кругляшок (Thumb) (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    /* Твой золотой цвет */
+    margin-top: -6px;
+    /* Выравнивание: (track_height/2) - (thumb_height/2) */
+    box-shadow: 0 0 10px var(--accent-glow);
+    transition: var(--transition);
+    border: none;
+}
+
+/* Для Firefox (у него свои псевдоэлементы) */
+input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+}
+
+input[type="range"]::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    border: none;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Эффект при наведении */
+input[type="range"]:hover::-webkit-slider-runnable-track {
+    background: var(--bg-3);
+    /* Чуть подсвечиваем дорожку */
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.3);
+    background: #fff;
+    /* Белеет при нажатии для отклика */
+}
+
+/* Громкость */
+.player-volume {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    color: var(--text-2);
+}
+
+.player-volume i {
+    font-size: 0.9rem;
+}
+
+#volume-bar {
+    max-width: 100px;
+}
