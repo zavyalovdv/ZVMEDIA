@@ -9,6 +9,11 @@ urlpatterns = [
     ),
     path("getcategories/", views.get_categories, name="get_categories"),
     path(
+        "category/favorites/",
+        views.ShowFavoriteBook.as_view(),
+        name="books_favorites",
+    ),
+    path(
         "category/<slug:book_category_slug>/",
         views.ShowBookCategory.as_view(),
         name="books_category",

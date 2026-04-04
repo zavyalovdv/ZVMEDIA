@@ -377,6 +377,23 @@ class ShowBookSubcategory(LoginRequiredMixin, ListView):
         ).order_by("-create_time")
 
 
+class ShowFavoriteBook(LoginRequiredMixin, ListView):
+    login_url = "/login/"
+    redirect_field_name = "redirect_to"
+    template_name = "booklibrary/books_category.html"
+    context_object_name = "books"
+
+    def get_queryset(self):
+        qs = Book.objects.filter(user=self.request.user, is_favorites=True)
+        print("--- DEBUG START ---")
+        print(f"Request User: {self.request.user}")
+        print(f"Is Authenticated: {self.request.user.is_authenticated}")
+        print(f"Queryset Count: {qs.count()}")
+        print(f"SQL Query: {qs.query}")  # Это покажет реальный SQL запрос
+        print("--- DEBUG END ---")
+        return qs
+
+
 class CreateBookCategory(LoginRequiredMixin, CreateView):
     login_url = "/login/"
     redirect_field_name = "redirect_to"

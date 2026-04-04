@@ -54,7 +54,6 @@ def check_file_extension(raw_file_extension):
 
 
 def fix_file_extension(raw_file_extension):
-    print("In fix_file_extension")
     if raw_file_extension.lower() == "flacon":
         new_file_extension = "flac"
 

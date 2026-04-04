@@ -1,6 +1,5 @@
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views.generic import ListView, DetailView, CreateView
-from django.db.models import Q
 from .models import Genre, Track, Album, Artist
 from django import forms
 from django.views.generic import FormView
@@ -68,7 +67,7 @@ class AddTrack(CreateView):
                     title=f.name,
                 )
 
-                # Сохраняем объект. Здесь сработает твой upload_to
+                # Сохраняем объект. Здесь сработает upload_to
                 track.save()
 
                 # Запускаем твой сервис (с pathlib и фиксом расширения)
