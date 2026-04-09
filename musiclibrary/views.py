@@ -6,9 +6,11 @@ from django.views.generic import FormView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from musiclibrary import services
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class MainMusics(ListView):
+class MainMusics(LoginRequiredMixin, ListView):
+    login_url = "/login/"
     model = Track
     template_name = "musiclibrary/musics.html"
     # context_object_name = "tracks"
@@ -21,13 +23,14 @@ class MainMusics(ListView):
         return context
 
 
-class AlbumDetailView(DetailView):
+class AlbumDetailView(LoginRequiredMixin, DetailView):
     model = Album
     template_name = "player/album.html"
     # В шаблоне обратимся через album.tracks.all
 
 
-class AddTrack(CreateView):
+class AddTrack(LoginRequiredMixin, CreateView):
+    login_url = "/login/"
     model = Track
     fields = ["title", "genre", "file"]
     template_name = "musiclibrary/add-track.html"
@@ -80,7 +83,8 @@ class AddTrack(CreateView):
             return self.form_invalid(form)
 
 
-class AddGenre(CreateView):
+class AddGenre(LoginRequiredMixin, CreateView):
+    login_url = "/login/"
     model = Genre
     fields = ["name"]
     template_name = "musiclibrary/add-genre.html"
