@@ -6,6 +6,7 @@ decorator==5.2.1
 Django==6.0.3
 django-extensions==4.1
 django-jinja==2.11.0
+django-shell-plus==1.1.7
 django-simple-history==3.11.0
 epub==0.5.2
 epub-conversion==1.0.15
@@ -17,6 +18,7 @@ jedi==0.19.2
 Jinja2==3.1.6
 MarkupSafe==3.0.3
 matplotlib-inline==0.2.1
+mutagen==1.47.0
 parso==0.8.6
 pexpect==4.9.0
 pillow==12.1.1

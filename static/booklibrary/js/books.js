@@ -1,4 +1,4 @@
-jQuery(document).ready(initBooksLibrary)
+jQuery(document).ready(initBooksLibrary);
 
 function initBooksLibrary() {
     let cookie = getCookie('csrftoken')
@@ -22,6 +22,10 @@ function getCookie(name) {
 
 
 function initBookTable() {
+    if (!$.fn.DataTable) {
+        console.error("DataTables plugin is not loaded!");
+        return;
+    }
     let table = $('#books-table').DataTable({
         paging: false,
         select: true,

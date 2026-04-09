@@ -1,6 +1,7 @@
 {% block 'booklist' %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'booklibrary/css/datatables.min.css' %}">
+<script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>
 
 <div class="data-tables vh-100">
 {{ books.count }}
@@ -143,9 +144,6 @@
     </table>
 </div>
 
-<script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
-<script src="{% static 'booklibrary/js/notify.min.js' %}"></script>
-<script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>
 <script src="{% static 'booklibrary/js/books.js' %}"></script>
 
 {% endblock %}

@@ -17,6 +17,9 @@
     <link type="text/css" href="{% static 'booklibrary/css/jquery-confirm.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'booklibrary/css/style.css' %}">
     {% block stylesheets %}{% endblock stylesheets %}
+    <script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
+    <script src="{% static 'booklibrary/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'booklibrary/js/notify.min.js' %}"></script>
 </head>
 
 <body>
@@ -70,9 +73,6 @@
     {% include './scripts.html' %}
     {% block javascripts %}{% endblock javascripts %}
 
-    <script src="{% static 'booklibrary/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
-    <script src="{% static 'booklibrary/js/notify.min.js' %}"></script>
     <script src="{% static 'booklibrary/js/script.js' %}"></script>
 </body>
 

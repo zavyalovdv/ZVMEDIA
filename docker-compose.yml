@@ -1,0 +1,12 @@
+services:
+  zvmedia:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./media:/app/media
+      - ./static:/app/static
+      - ./db.sqlite3:/app/db.sqlite3
+    env_file:
+      - .env
+    restart: always
