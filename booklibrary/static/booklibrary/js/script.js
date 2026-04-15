@@ -1,5 +1,4 @@
 function exec() {
-    console.log("Hello from Django")
     $("#id_author").addClass("form-control")
     setFavoritesListener()
 

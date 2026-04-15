@@ -2,9 +2,27 @@
 {{ slug|json_script:"slug" }}
 
 <script>
-    let pdf_url = JSON.parse(document.getElementById('pdf_url').textContent);
-    let slug = JSON.parse(document.getElementById('slug').textContent);
-    pdf_url = pdf_url.replace(/^"(.*)"$/, '$1');
-    slug = slug.replace(/^"(.*)"$/, '$1');
-    window.location.replace("http://127.0.0.1:8000/books/reader/"+slug+""+"?file=" + pdf_url);
+    // 1. Получаем данные из Django json_script
+    let rawPdfUrl = JSON.parse(document.getElementById('pdf_url').textContent);
+    let rawSlug = JSON.parse(document.getElementById('slug').textContent);
+
+    // 2. Очистка от возможных лишних кавычек
+    const clean = (str) => str.replace(/^"|"$/g, '');
+    
+    let slug = clean(rawSlug);
+    let pdf_url = clean(rawPdfUrl);
+
+    // Убеждаемся, что pdf_url начинается со слеша (как вы просили)
+    if (!pdf_url.startsWith('/')) {
+        pdf_url = '/' + pdf_url;
+    }
+
+    // 3. Сборка финального URL:
+    // - Берем путь от корня /books/reader/
+    // - Сразу после слага ставим ?file= (без лишнего слеша)
+    // - Добавляем pdf_url без кодирования символов
+    const targetUrl = "/books/reader/" + slug + "?file=" + pdf_url;
+    
+    console.log("Redirecting to:", targetUrl);
+    window.location.replace(targetUrl);
 </script>

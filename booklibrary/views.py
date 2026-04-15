@@ -22,14 +22,12 @@ from booklibrary.forms import (
     UpdatedBookUploadForm,
 )
 from ZVMEDIA.settings import MEDIA_ROOT
-from booklibrary.modules.services.utils import UserToFormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
 from django.urls import reverse_lazy
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import login, logout
-from django.contrib import messages
+from .models import Book
 
 
 def get_last_week():
@@ -81,16 +79,16 @@ def book_init_as_pdf(request, book_slug):
         book = Book.objects.get(slug=book_slug)
     except Exception as e:
         print("book_init_as_pdf: Book.objects.get(slug=book_slug): ZALUPA")
-    try:
-        template = "booklibrary/init_detail_book.html"
-        context = {
-            "pdf_url": json.dumps(pdf_url, cls=DjangoJSONEncoder),
-            "slug": json.dumps(book_slug, cls=DjangoJSONEncoder),
-            "filename": book.file.__str__,
-        }
-        return render(request, template_name=template, context=context)
-    except:
-        return render(request, template_name=template, context=context)
+    # try:
+    template = "booklibrary/init_detail_book.html"
+    context = {
+        "pdf_url": pdf_url,
+        "slug": book_slug,
+        "filename": str(book.file),
+    }
+    return render(request, template_name=template, context=context)
+    # except:
+    #     return render(request, template_name=template, context=context)
 
 
 def book_reader_as_pdf(request, book_slug):
@@ -115,28 +113,6 @@ def book_get_pdf(request, book_slug):
         book.save(update_fields=["status"])
 
 
-# @csrf_exempt
-# def book_set_pdf(request, book_slug):
-#     if request.method == "POST":
-#         book = Book.objects.get(slug=book_slug)
-#         try:
-#             book_path = book.file.path
-#             filename = (book.file.name).split("/")[1]
-#             book.file = request.FILES["book"]
-#             book.file.name = filename
-#             os.remove(book_path)
-#             book.save(update_fields=["file"])
-#         except:
-#             response = {"is_taken": False}
-#             response = {"is_taken": False}
-#     response = {"is_taken": True}
-#     return JsonResponse(response)
-
-import os
-from django.http import JsonResponse
-from .models import Book
-
-
 def book_set_pdf(request, book_slug):
     if request.method == "POST":
         # УДАЛЯЕМ json.loads(request.body), файлы живут в request.FILES
@@ -153,21 +129,13 @@ def book_set_pdf(request, book_slug):
 
             new_file = request.FILES["book"]
 
-            # 3. Удаляем старый файл физически (чтобы не плодить копии)
-            # Важно: делаем это ДО присвоения нового, пока у нас есть старый путь
             if book.file and os.path.isfile(book.file.path):
                 try:
                     os.remove(book.file.path)
                 except OSError:
-                    pass  # Если файл уже удален или занят, не падаем
+                    pass
 
-            # 4. Обновляем файл
-            # Django сам вызовет твой upload_to, используя текущий slug и оригинальное имя файла
             book.file = new_file
-
-            # 5. Сохраняем
-            # В твоем случае лучше сохранить весь объект, чтобы отработала логика
-            # пересчета страниц и слов внутри метода save()
             book.save()
 
             return JsonResponse({"is_taken": True})
@@ -177,14 +145,13 @@ def book_set_pdf(request, book_slug):
                 {"is_taken": False, "error": "Book not found"}, status=404
             )
         except Exception as e:
-            # Выводим ошибку в консоль сервера, чтобы ты видел, если что-то пойдет не так
             print(f"Ошибка сохранения PDF: {e}")
             return JsonResponse({"is_taken": False, "error": str(e)}, status=500)
 
     return JsonResponse({"is_taken": False, "error": "Invalid request"}, status=400)
 
 
-# @csrf_exempt
+@csrf_exempt
 def ajax_update_extradata_book(request, book_slug):
     if request.method == "POST":
         data = json.load(request)
@@ -307,11 +274,9 @@ def delete_book(request, book_slug):
 
         book.delete()
 
-        # Если это обычный запрос — редиректим
         if request.headers.get("x-requested-with") != "XMLHttpRequest":
             return redirect("books")
 
-        # Если это AJAX (наш JS выше), возвращаем URL для редиректа
         return JsonResponse({"state": True, "url": "/books/"})
 
     except Exception as e:

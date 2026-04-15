@@ -1,7 +1,9 @@
-jQuery(document).ready(initBooksLibrary);
+$(document).ready(function () {
+    let cookie = getCookie('csrftoken')
+    initBooksLibrary();
+});
 
 function initBooksLibrary() {
-    let cookie = getCookie('csrftoken')
     initBookTable()
 }
 
@@ -21,30 +23,18 @@ function getCookie(name) {
 }
 
 
+
+
 function initBookTable() {
-    if (!$.fn.DataTable) {
-        console.error("DataTables plugin is not loaded!");
-        return;
-    }
     let table = $('#books-table').DataTable({
         paging: false,
-        select: true,
-        scrollX: true,
-        scrollCollapse: true,
         searching: true,
         dom: 't',
-        autoWidth: false,
+        scrollX: true,
+        scrollY: 'calc(100vh - 250px)', // Регулируй это число под свой футер/хедер
+        scrollCollapse: true,
+        autoWidth: false, // Обязательно false
         order: [],
-        columnDefs: [
-            { targets: '_all', className: 'dt-body-left', orderable: true },
-            { targets: [12, 13], orderable: false },
-        ]
-    });
-
-    // Make table body scrollable within container
-    $('.dt-scroll-body, .dataTables_scrollBody').css({
-        'max-height': 'calc(100vh - ' + (60 + 100) + 'px)',
-        'overflow-y': 'auto'
     });
 
     $('#searchbox').on('keyup input', function () {
@@ -52,54 +42,54 @@ function initBookTable() {
     });
 
 
+    // // Favorites filter toggle
+    // let favoritesOnly = false;
+    // $('#toggle-favorites').on('click', function () {
+    //     favoritesOnly = !favoritesOnly;
+    //     $(this).toggleClass('btn-accent', favoritesOnly);
+    //     $(this).toggleClass('btn-ghost', !favoritesOnly);
+    //     if (favoritesOnly) {
+    //         $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    //             return $(table.row(dataIndex).node()).find('.bi-star-fill').length > 0;
+    //         });
+    //     } else {
+    //         $.fn.dataTable.ext.search.pop();
+    //     }
+    //     table.draw();
+    // });
 
-    // Favorites filter toggle
-    let favoritesOnly = false;
-    $('#toggle-favorites').on('click', function () {
-        favoritesOnly = !favoritesOnly;
-        $(this).toggleClass('btn-accent', favoritesOnly);
-        $(this).toggleClass('btn-ghost', !favoritesOnly);
-        if (favoritesOnly) {
-            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                return $(table.row(dataIndex).node()).find('.bi-star-fill').length > 0;
-            });
+    // // Fix dropdown position — use fixed positioning relative to button
+    // document.addEventListener('shown.bs.dropdown', function (e) {
+    //     const menu = e.target.querySelector('.dropdown-menu');
+    //     if (!menu) return;
+    //     const btn = e.target.querySelector('[data-bs-toggle="dropdown"]');
+    //     const rect = btn.getBoundingClientRect();
+    //     menu.style.position = 'fixed';
+    //     menu.style.top = (rect.top - menu.offsetHeight - 4) + 'px';
+    //     menu.style.left = (rect.right - menu.offsetWidth) + 'px';
+    //     menu.style.margin = '0';
+    // });
+
+    async function deleteBook(slug) {
+        if (!confirm('Реально удалить книгу? Восстановить не получится.')) return;
+
+        const response = await fetch(`/books/removebook/${slug}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+        });
+
+        if (response.redirected) {
+            // Если Django ответил redirect("books"), браузер перейдет туда
+            window.location.href = response.url;
         } else {
-            $.fn.dataTable.ext.search.pop();
-        }
-        table.draw();
-    });
-
-    // Fix dropdown position — use fixed positioning relative to button
-    document.addEventListener('shown.bs.dropdown', function (e) {
-        const menu = e.target.querySelector('.dropdown-menu');
-        if (!menu) return;
-        const btn = e.target.querySelector('[data-bs-toggle="dropdown"]');
-        const rect = btn.getBoundingClientRect();
-        menu.style.position = 'fixed';
-        menu.style.top = (rect.top - menu.offsetHeight - 4) + 'px';
-        menu.style.left = (rect.right - menu.offsetWidth) + 'px';
-        menu.style.margin = '0';
-    });
-}
-
-async function deleteBook(slug) {
-    if (!confirm('Реально удалить книгу? Восстановить не получится.')) return;
-
-    const response = await fetch(`/books/removebook/${slug}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-    });
-
-    if (response.redirected) {
-        // Если Django ответил redirect("books"), браузер перейдет туда
-        window.location.href = response.url;
-    } else {
-        const data = await response.json();
-        if (data.state === false) {
-            alert('Ошибка при удалении');
+            const data = await response.json();
+            if (data.state === false) {
+                alert('Ошибка при удалении');
+            }
         }
     }
+
 }

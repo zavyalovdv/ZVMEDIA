@@ -1,7 +1,67 @@
 {% block 'music_table' %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'musiclibrary/css/style.css' %}">
+<style>
+/* Схлопываем скрытый технический заголовок в 0 */
+.dt-scroll-body thead,
+.dt-scroll-body thead tr,
+.dt-scroll-body thead th {
+    height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 0 !important;
+    border: none !important;
+    visibility: hidden !important;
+}
 
+/* Убираем иконки сортировки, которые могут иметь свои отступы */
+.dt-scroll-body thead th::before,
+.dt-scroll-body thead th::after {
+    display: none !important;
+    content: "" !important;
+}
+
+/* Если внутри th есть обертка (div), её тоже нужно обнулить */
+.dt-scroll-body thead th div {
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+/* 1. Стили ТОЛЬКО для видимой шапки (которая зафиксирована сверху) */
+.dt-scroll-head table.dataTable thead > tr > th {
+  background: var(--bg-2) !important;
+  color: var(--text-3) !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-top: none !important;
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  padding: 12px 16px !important; /* Твой паддинг остается тут */
+  white-space: nowrap;
+}
+
+/* 2. Стили для технического клона (который внутри скролла) — ОБНУЛЯЕМ */
+.dt-scroll-body table.dataTable thead > tr > th {
+  padding: 0 !important;
+  height: 0 !important;
+  line-height: 0 !important;
+  border: none !important;
+  visibility: hidden !important;
+}
+
+/* 3. Дополнительно гасим иконки сортировки в клоне, они тоже могут давать высоту */
+.dt-scroll-body table.dataTable thead > tr > th::before,
+.dt-scroll-body table.dataTable thead > tr > th::after {
+  display: none !important;
+}
+.table {
+margin-bottom: 0rem;
+}
+
+</style>
 <div class="data-tables vh-100">
 
     <!-- Toolbar -->
@@ -36,14 +96,15 @@
         </thead>
         <tbody>
             {% for track in tracks %}
-<td>
-    <button class="btn-play-track" 
-            data-url="{{ track.file.url }}" 
-            style="background:none; border:none; cursor:pointer; color: var(--accent);">
-        <i class="fas fa-play"></i>
-    </button>
-    {{ track.title }}
-</td>
+            <tr>
+                <td>
+                    <button class="btn-play-track" 
+                            data-url="{{ track.file.url }}" 
+                            style="background:none; border:none; cursor:pointer; color: var(--accent);">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    {{ track.title }}
+                </td>
                 <td>{{ track.artist }}</td>
                 <td>{{ track.album }}</td>
                 <td>{{ track.genre }}</td>
@@ -85,6 +146,8 @@
 </div>
 
 <audio id="global-audio-player"></audio>
+<link rel="stylesheet" href="{% static 'musiclibrary/css/style.css' %}">
+
 <script src="{% static 'booklibrary/js/jquery.min.js' %}"></script>
 
 <script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>

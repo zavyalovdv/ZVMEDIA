@@ -23,15 +23,21 @@ class MusicApp {
     }
 
     initDataTable() {
-        // Вызываем DataTable через проверенный экземпляр
         this.table = this.$('#music-table').DataTable({
             paging: false,
-            select: true,
             scrollX: true,
+            scrollY: 'calc(100vh - 350px)', // Ограничь высоту, чтобы не вылезало за плеер
+            scrollCollapse: true,
+            autoWidth: false, // Всегда false при скролле
             dom: 't',
             order: [],
             columnDefs: [{ targets: '_all', className: 'dt-body-left' }]
         });
+
+        // Это "пропихнет" расчеты ширин и уберет лишние отступы
+        setTimeout(() => {
+            this.table.columns.adjust().draw();
+        }, 200);
     }
 
     bindEvents() {

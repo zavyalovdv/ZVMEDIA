@@ -1,10 +1,67 @@
 {% block 'booklist' %}
 {% load static %}
+
 <link rel="stylesheet" href="{% static 'booklibrary/css/datatables.min.css' %}">
+<link rel="stylesheet" href="{% static 'booklibrary/css/style.css' %}">
 <script src="{% static 'booklibrary/js/datatables.min.js' %}"></script>
 
+<style>
+.dt-scroll-body thead,
+.dt-scroll-body thead tr,
+.dt-scroll-body thead th {
+    height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 0 !important;
+    border: none !important;
+    visibility: hidden !important;
+}
+
+.dt-scroll-body thead th::before,
+.dt-scroll-body thead th::after {
+    display: none !important;
+    content: "" !important;
+}
+
+.dt-scroll-body thead th div {
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.dt-scroll-head table.dataTable thead > tr > th {
+  background: var(--bg-2) !important;
+  color: var(--text-3) !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-top: none !important;
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  padding: 12px 16px !important; /* Твой паддинг остается тут */
+  white-space: nowrap;
+}
+
+.dt-scroll-body table.dataTable thead > tr > th {
+  padding: 0 !important;
+  height: 0 !important;
+  line-height: 0 !important;
+  border: none !important;
+  visibility: hidden !important;
+}
+
+.dt-scroll-body table.dataTable thead > tr > th::before,
+.dt-scroll-body table.dataTable thead > tr > th::after {
+  display: none !important;
+}
+.table {
+margin-bottom: 0rem;
+}
+</style>
 <div class="data-tables vh-100">
-{{ books.count }}
+
     <!-- Toolbar -->
     <div class="table-toolbar">
         <div class="search-wrap">
@@ -20,7 +77,7 @@
     </div>
 
     <!-- Table -->
-    <table class="table compact display nowrap books-table" id="books-table" style="width:100%">
+    <table class="table compact display nowrap books-table" id="books-table">
         <thead>
             <tr>
                 <th>Название</th>
@@ -116,7 +173,6 @@
                 </td>
                 <td style="overflow: visible; position: relative; min-width: 40px;">
                     <div class="btn-group dropup">
-                        <button type="button"
                         <button type="button"
                             class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
                             data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="true">
